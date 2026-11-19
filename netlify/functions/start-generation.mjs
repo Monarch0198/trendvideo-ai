@@ -1,158 +1,113 @@
 
-
-
-import { timingSafeEqual } from 'node:crypto';
-
-const MODEL_ID = 'fal-ai/vidu/q4/image-to-video';
+const MODEL_ID = "fal-ai/vidu/q4/image-to-video";
 const MAX_IMAGE_DATA_LENGTH = 5_000_000;
 const ALLOWED_DURATIONS = new Set([5, 8, 10]);
-const ALLOWED_RESOLUTIONS = new Set(['540p', '720p']);
+const ALLOWED_RESOLUTIONS = new Set(["540p", "720p"]);
 
-const recentStarts = new Map();
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Content-Type": "application/json",
+};
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'no-store'
-    }
+    headers: corsHeaders,
   });
 }
 
-function safeEqual(a, b) {
-  const left = Buffer.from(String(a));
-  const right = Buffer.from(String(b));
-
-  return left.length === right.length &&
-    timingSafeEqual(left, right);
-}
-
 export default async (request) => {
-  if (request.method !== 'POST') {
-    return json({ error: 'Используй POST-запрос.' }, 405);
+  if (request.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: corsHeaders });
+  }
+
+  if (request.method !== "POST") {
+    return json({ error: "Разрешён только POST-запрос" }, 405);
   }
 
   const falKey = process.env.FAL_KEY;
-  const accessSecret = process.env.TRENDVIDEO_ACCESS_CODE;
+  const expectedAccessCode = process.env.TRENDVIDEO_ACCESS_CODE;
 
-  if (!falKey || !accessSecret) {
-    return json({
-      error: 'Сервер не настроен. Проверь FAL_KEY и TRENDVIDEO_ACCESS_CODE.'
-    }, 503);
-  }
-
-  let body;
-
-  try {
-    body = await request.json();
-  } catch {
-    return json({ error: 'Не удалось прочитать запрос.' }, 400);
-  }
-
-  if (!safeEqual(body.accessCode || '', accessSecret)) {
-    return json({ error: 'Неверный защитный код.' }, 403);
-  }
-
-  const ip =
-    request.headers.get('x-nf-client-connection-ip') ||
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    'unknown';
-
-  const now = Date.now();
-  const previous = recentStarts.get(ip) || [];
-  const recent = previous.filter(
-    (time) => now - time < 10 * 60 * 1000
-  );
-
-  if (recent.length >= 2) {
-    return json({
-      error: 'Уже запущено 2 задания за 10 минут. Подожди немного.'
-    }, 429);
-  }
-
-  const imageData = body.imageData;
-
-  if (
-    typeof imageData !== 'string' ||
-    imageData.length > MAX_IMAGE_DATA_LENGTH ||
-    !/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(imageData)
-  ) {
-    return json({
-      error: 'Фото не подходит или слишком большое. Выбери JPG, PNG или WEBP.'
-    }, 400);
-  }
-
-  const prompt = typeof body.prompt === 'string'
-    ? body.prompt.trim()
-    : '';
-
-  const duration = Number(body.duration);
-  const resolution = body.resolution;
-
-  if (!prompt || prompt.length > 1500) {
-    return json({ error: 'Проверь описание видео.' }, 400);
-  }
-
-  if (!ALLOWED_DURATIONS.has(duration)) {
-    return json({ error: 'Выбери длительность 5, 8 или 10 секунд.' }, 400);
-  }
-
-  if (!ALLOWED_RESOLUTIONS.has(resolution)) {
-    return json({ error: 'Выбери качество 540p или 720p.' }, 400);
+  if (!falKey || !expectedAccessCode) {
+    return json({ error: "Сервер не настроен: проверьте переменные окружения" }, 503);
   }
 
   try {
+    const body = await request.json();
+
+    const {
+      imageData,
+      prompt = "",
+      duration = 5,
+      resolution = "720p",
+      accessCode,
+    } = body;
+
+    if (accessCode !== expectedAccessCode) {
+      return json({ error: "Неверный защитный код" }, 403);
+    }
+
+    if (
+      typeof imageData !== "string" ||
+      imageData.length > MAX_IMAGE_DATA_LENGTH ||
+      !/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(imageData)
+    ) {
+      return json({ error: "Фото отсутствует или имеет неподдерживаемый формат" }, 400);
+    }
+
+    if (typeof prompt !== "string" || prompt.length > 5000) {
+      return json({ error: "Некорректное описание видео" }, 400);
+    }
+
+    if (!ALLOWED_DURATIONS.has(Number(duration))) {
+      return json({ error: "Недопустимая длительность видео" }, 400);
+    }
+
+    if (!ALLOWED_RESOLUTIONS.has(resolution)) {
+      return json({ error: "Недопустимое качество видео" }, 400);
+    }
+
     const response = await fetch(
       `https://queue.fal.run/${MODEL_ID}`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Key ${falKey}`,
-          'Content-Type': 'application/json'
+          Authorization: `Key ${falKey}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          prompt,
           image_url: imageData,
-          duration,
+          prompt,
+          duration: Number(duration),
           resolution,
-          enable_safety_checker: true
-        })
+          enable_safety_checker: true,
+        }),
       }
     );
 
-    const data = await response.json().catch(() => ({}));
+    const result = await response.json();
 
     if (!response.ok) {
-      console.error(
-        'fal.ai submit error:',
-        response.status,
-        JSON.stringify(data).slice(0, 1500)
+      console.error("fal.ai error:", result);
+      return json(
+        { error: result.detail || result.message || "Ошибка отправки запроса в fal.ai" },
+        response.status
       );
-
-      return json({
-        error: data.detail || data.message ||
-          `fal.ai отклонил запрос (код ${response.status}).`
-      }, 502);
     }
 
-    if (!data.request_id) {
-      return json({ error: 'fal.ai не вернул номер задания.' }, 502);
+    if (!result.request_id) {
+      return json({ error: "Сервис не вернул номер запроса" }, 502);
     }
-
-    recent.push(now);
-    recentStarts.set(ip, recent);
 
     return json({
-      requestId: data.request_id,
-      status: data.status || 'IN_QUEUE'
+      success: true,
+      requestId: result.request_id,
     });
 
   } catch (error) {
-    console.error('fal.ai connection error:', error);
-
-    return json({
-      error: 'Не удалось связаться с fal.ai. Попробуй позже.'
-    }, 502);
+    console.error("Generation error:", error);
+    return json({ error: "Внутренняя ошибка сервера" }, 500);
   }
 };
