@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10111a">
+<meta name="description" content="TrendVideo AI — идеи и подготовка коротких AI-видео из фотографий.">
+<link rel="manifest" href="manifest.webmanifest">
+<title>TrendVideo AI</title>
+<style>
+:root{--bg:#10111a;--panel:#191b28;--panel2:#222538;--text:#f7f7fb;--muted:#a7abc0;--accent:#a78bfa;--accent2:#6ee7d8;--line:#303349}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#292344 0,#10111a 48%);color:var(--text);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:620px;margin:auto;padding:22px 16px 48px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.logo{font-weight:850;letter-spacing:-.5px;font-size:20px}.logo span{color:var(--accent)}
+.pill{font-size:11px;color:#d9d2ff;border:1px solid #514477;background:#28213e;padding:5px 9px;border-radius:30px}
+h1{font-size:30px;line-height:1.1;letter-spacing:-1px;margin:12px 0}
+.sub{color:var(--muted);margin:0 0 22px;font-size:14px}
+.card{background:rgba(25,27,40,.94);border:1px solid var(--line);border-radius:20px;padding:16px;margin:14px 0;box-shadow:0 12px 36px #0002}
+.label{font-size:13px;font-weight:750;margin:0 0 10px;display:block}
+.upload{border:1.5px dashed #64617e;border-radius:16px;padding:20px 14px;text-align:center;background:#202033;cursor:pointer;display:block}
+.upload strong{display:block;margin:7px 0 3px}.upload small{color:var(--muted)}
+input[type=file]{display:none}
+#preview{width:100%;max-height:260px;object-fit:contain;border-radius:12px;margin-top:12px;display:none;background:#0b0c12}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.trend{background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:12px;border-radius:14px;text-align:left;cursor:pointer;min-height:74px}
+.trend b{display:block;font-size:13px}.trend small{color:var(--muted);font-size:11px}
+.trend.active{border-color:var(--accent);background:#30294a;box-shadow:inset 0 0 0 1px var(--accent)}
+textarea,select{width:100%;border:1px solid var(--line);background:#11131e;color:var(--text);border-radius:12px;padding:12px;font:inherit}
+textarea{min-height:112px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+select{padding:11px}
+button.primary{width:100%;border:0;border-radius:14px;padding:15px 18px;background:linear-gradient(100deg,#9b7af4,#6a9df7);color:#11111a;font-weight:850;font-size:16px;cursor:pointer;margin-top:6px}
+button.primary:disabled{opacity:.45;cursor:not-allowed}
+.note{font-size:12px;color:var(--muted);margin:10px 2px 0}
+.status{display:none;border:1px solid #65533b;background:#30291e;color:#ffe4b2;padding:13px;border-radius:13px;margin-top:14px;font-size:13px}
+footer{color:#777c94;font-size:11px;text-align:center;margin:26px 0 0}
+.tag{display:inline-block;border-radius:20px;background:#202d35;color:#a6f4e9;padding:4px 8px;font-size:11px;margin-bottom:7px}
+@media(min-width:560px){.wrap{padding-top:34px}h1{font-size:36px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header><div class="logo">TrendVideo<span>.AI</span></div><div class="pill">ТЕСТОВАЯ ВЕРСИЯ</div></header>
+<div class="tag">Фото → идея для видео</div>
+<h1>Преврати фото<br>в трендовое видео</h1>
+<p class="sub">Выбери эффект, опиши сцену и создай короткое видео из фотографии.</p>
+
+<section class="card">
+<label class="label">1. Загрузи фотографию</label>
+<label class="upload" for="photo">
+  <div style="font-size:30px">＋</div>
+  <strong>Нажми, чтобы выбрать фото</strong>
+  <small>JPG, PNG или WEBP · лучше одно чёткое фото</small>
+</label>
+<input id="photo" type="file" accept="image/png,image/jpeg,image/webp">
+<img id="preview" alt="Предпросмотр загруженной фотографии">
+</section>
+
+<section class="card">
+<label class="label">2. Выбери идею</label>
+<div class="grid" id="trends">
+<button class="trend active" data-prompt="A person suddenly appears from behind a haystack, surprises the other person, then performs a funny energetic dance facing them. Photorealistic live-action, natural movements."><b>🌾 Сюрприз из сена</b><small>Неожиданное появление и танец</small></button>
+<button class="trend" data-prompt="The person in the photo performs a funny energetic dance, with natural realistic body movement and expressive facial reactions. Photorealistic live-action."><b>🕺 Танцевальный тренд</b><small>Весёлый танец</small></button>
+<button class="trend" data-prompt="The person in the photo transforms into a cinematic action hero, with a dramatic reveal, realistic lighting and natural movement."><b>🎬 Герой фильма</b><small>Кинематографичный образ</small></button>
+<button class="trend" data-prompt="The person in the photo reacts with exaggerated surprise to an unexpected funny event, then laughs. Photorealistic live-action."><b>😂 Смешная реакция</b><small>Неожиданный момент</small></button>
+</div>
+</section>
+
+<section class="card">
+<label class="label" for="prompt">3. Опиши своё видео</label>
+<textarea id="prompt" placeholder="Например: человек вылезает из-под сена, девушка пугается, а он начинает танцевать, глядя на неё."></textarea>
+<p class="note">Подсказка: укажи, кто что делает, куда смотрит и как должна двигаться камера.</p>
+</section>
+
+<section class="card">
+<label class="label">4. Настройки</label>
+<div class="row">
+<div><label class="label" for="quality">Качество</label><select id="quality"><option value="540p" selected>540p · экономно</option><option value="720p">720p · чётче</option></select></div>
+<div><label class="label" for="duration">Длительность</label><select id="duration"><option value="5" selected>5 секунд</option><option value="8">8 секунд</option><option value="10">10 секунд</option></select></div>
+</div>
+<p class="note" id="priceEstimate">Ориентировочная стоимость будет показана перед запуском. Оплата списывается сервисом fal.ai за готовое видео.</p>
+</section>
+
+<section class="card">
+<label class="label" for="accessCode">Защитный код доступа</label>
+<input id="accessCode" type="password" autocomplete="off" placeholder="Введи код, который настроим в Netlify" style="width:100%;border:1px solid var(--line);background:#11131e;color:var(--text);border-radius:12px;padding:12px;font:inherit">
+<p class="note">Код нужен, чтобы посторонние не могли запускать платную генерацию на твоём аккаунте.</p>
+</section>
+<button class="primary" id="generate" disabled>Создать видео ✨</button>
+<div class="status" id="status" role="status" aria-live="polite"></div>
+<div id="result" class="card" style="display:none">
+<label class="label">Твоё видео готово</label>
+<video id="videoResult" controls playsinline style="width:100%;border-radius:12px;background:#080910"></video>
+<a id="downloadVideo" class="primary" style="display:block;text-align:center;text-decoration:none;margin-top:12px" target="_blank" rel="noopener">Скачать видео</a>
+</div>
+<p class="note">Важно: создание видео платное. Перед каждым запуском сайт покажет примерную стоимость и попросит подтверждение. Не нажимай подтверждение, если не хочешь тратить средства.</p>
+<footer>TrendVideo AI · тестовая версия · генерация выполняется через fal.ai</footer>
+</main>
+<script>
+const photo = document.getElementById('photo');
+const preview = document.getElementById('preview');
+const promptBox = document.getElementById('prompt');
+const generate = document.getElementById('generate');
+const statusBox = document.getElementById('status');
+const resultBox = document.getElementById('result');
+const videoResult = document.getElementById('videoResult');
+const downloadVideo = document.getElementById('downloadVideo');
+const accessCodeBox = document.getElementById('accessCode');
+const durationBox = document.getElementById('duration');
+const qualityBox = document.getElementById('quality');
+let selectedFile = null;
+let busy = false;
+
+const MODEL = 'fal-ai/vidu/q4/image-to-video';
+
+function estimatePrice() {
+  const seconds = Number(durationBox.value);
+  const quality = qualityBox.value;
+  // fal.ai promotional rates currently run through 30 Nov 2026; prices can change.
+  const promo = new Date() <= new Date('2026-11-30T23:59:59');
+  const perSecond = quality === '540p' ? (promo ? 0.0315 : 0.045) : (promo ? 0.0665 : 0.095);
+  const total = seconds * perSecond;
+  document.getElementById('priceEstimate').textContent =
+    `Примерная цена: $${total.toFixed(2)} за ${seconds} сек. (${quality}). Тариф fal.ai может измениться — перед запуском проверь актуальную цену.`;
+  return { total, perSecond, promo };
+}
+
+durationBox.addEventListener('change', estimatePrice);
+qualityBox.addEventListener('change', estimatePrice);
+estimatePrice();
+
+photo.addEventListener('change', () => {
+  selectedFile = photo.files && photo.files[0];
+  if (!selectedFile) { generate.disabled = true; return; }
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(selectedFile.type)) {
+    alert('Выбери JPG, PNG или WEBP.'); photo.value = ''; selectedFile = null; return;
+  }
+  if (selectedFile.size > 12 * 1024 * 1024) {
+    alert('Файл слишком большой. Выбери фото до 12 МБ.'); photo.value = ''; selectedFile = null; return;
+  }
+  preview.src = URL.createObjectURL(selectedFile);
+  preview.style.display = 'block';
+  generate.disabled = false;
+  statusBox.style.display = 'none';
+  resultBox.style.display = 'none';
+});
+
+document.querySelectorAll('.trend').forEach((btn) => btn.addEventListener('click', () => {
+  document.querySelectorAll('.trend').forEach((item) => item.classList.remove('active'));
+  btn.classList.add('active');
+  promptBox.value = btn.dataset.prompt;
+}));
+// Put the selected trend text into the prompt on first load.
+const firstTrend = document.querySelector('.trend.active');
+if (firstTrend) promptBox.value = firstTrend.dataset.prompt;
+
+function showStatus(message, isError = false) {
+  statusBox.style.display = 'block';
+  statusBox.style.borderColor = isError ? '#8a4545' : '#65533b';
+  statusBox.style.background = isError ? '#351f25' : '#30291e';
+  statusBox.style.color = isError ? '#ffd1d1' : '#ffe4b2';
+  statusBox.textContent = message;
+  statusBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function compressPhoto(file) {
+  const bitmap = await createImageBitmap(file);
+  const maxSide = 1280;
+  const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  return canvas.toDataURL('image/jpeg', 0.82);
+}
+
+async function postFunction(name, payload) {
+  const response = await fetch(`/.netlify/functions/${name}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || `Ошибка сервера (${response.status})`);
+  return data;
+}
+
+async function waitForVideo(requestId, accessCode) {
+  const startedAt = Date.now();
+  while (Date.now() - startedAt < 10 * 60 * 1000) {
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    const data = await postFunction('generation-status', { requestId, accessCode });
+    if (data.status === 'IN_QUEUE') {
+      showStatus(`Задание в очереди fal.ai. Место в очереди: ${data.queuePosition ?? '—'}.`);
+      continue;
+    }
+    if (data.status === 'IN_PROGRESS') {
+      showStatus('Видео создаётся. Это может занять несколько минут…');
+      continue;
+    }
+    if (data.status === 'COMPLETED' && data.videoUrl) return data.videoUrl;
+    if (data.status === 'FAILED') throw new Error(data.error || 'fal.ai не смог создать видео.');
+  }
+  throw new Error('Генерация длится дольше обычного. Задание могло продолжиться в fal.ai; попробуй проверить позже.');
+}
+
+generate.addEventListener('click', async () => {
+  if (!selectedFile || busy) return;
+  const prompt = promptBox.value.trim();
+  const accessCode = accessCodeBox.value.trim();
+  if (!prompt) { alert('Добавь описание видео.'); promptBox.focus(); return; }
+  if (!accessCode) { alert('Введи защитный код доступа.'); accessCodeBox.focus(); return; }
+  const { total, perSecond, promo } = estimatePrice();
+  const seconds = Number(durationBox.value);
+  const quality = qualityBox.value;
+  const promoText = promo ? 'Сейчас действует промо-тариф, который может измениться.' : 'Использован опубликованный обычный тариф; цена может измениться.';
+  const consent = window.confirm(
+    `ВНИМАНИЕ: это платная генерация через fal.ai.\n\nМодель: Vidu Q4\nДлительность: ${seconds} сек.\nКачество: ${quality}\nПримерная стоимость: $${total.toFixed(2)}\n\n${promoText}\n\nПродолжить и отправить фото на обработку?`
+  );
+  if (!consent) return;
+
+  busy = true;
+  generate.disabled = true;
+  resultBox.style.display = 'none';
+  showStatus('Подготавливаю фотографию…');
+  try {
+    const imageData = await compressPhoto(selectedFile);
+    showStatus('Отправляю задание в fal.ai…');
+    const submitted = await postFunction('start-generation', {
+      accessCode,
+      imageData,
+      prompt,
+      duration: seconds,
+      resolution: quality
+    });
+    showStatus('Задание принято. Ожидаем создание видео…');
+    const videoUrl = await waitForVideo(submitted.requestId, accessCode);
+    videoResult.src = videoUrl;
+    downloadVideo.href = videoUrl;
+    downloadVideo.download = 'trendvideo-ai.mp4';
+    resultBox.style.display = 'block';
+    showStatus('Готово! Видео создано. Его можно посмотреть или скачать.');
+    resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (error) {
+    showStatus(error.message || 'Не удалось создать видео. Проверь настройки и попробуй позже.', true);
+  } finally {
+    busy = false;
+    generate.disabled = !selectedFile;
+  }
+});
+
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+</script>
+</body></html>
