@@ -53,7 +53,7 @@ export default async (request) => {
   if (!ALLOWED_RESOLUTIONS.has(resolution)) return json({ error: 'Выбери качество 540p или 720p.' }, 400);
 
   try {
-   const response = await fetch(`https://queue.fal.run/${MODEL_ID}`, { `, {
+   const response = await fetch(`https://queue.fal.run/${MODEL_ID}`, {`, { `, {
       method: 'POST',
       headers: {
         'Authorization': `Key ${falKey}`,
