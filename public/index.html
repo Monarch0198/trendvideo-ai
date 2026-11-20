@@ -219,15 +219,43 @@ h1 span {
   background: linear-gradient(145deg,rgba(255,186,103,.25),rgba(113,64,119,.2));
 }
 
+
+.trend {
+  position: relative;
+  overflow: hidden;
+  animation: trendAppear .6s ease both;
+}
+
+.trend:nth-child(2) { animation-delay: .08s; }
+.trend:nth-child(3) { animation-delay: .16s; }
+.trend:nth-child(4) { animation-delay: .24s; }
+
 .trend:hover {
-  transform: translateY(-3px);
-  border-color: rgba(255,155,225,.65);
+  transform: translateY(-4px) scale(1.02);
+  border-color: #ff9ce2;
+  box-shadow: 0 8px 25px rgba(250,85,212,.2);
+}
+
+.trend:active {
+  transform: scale(.97);
 }
 
 .trend.active {
   border: 2px solid #ff9ce2;
-  box-shadow: 0 0 22px rgba(250,85,212,.25);
+  box-shadow: 0 0 25px rgba(250,85,212,.35);
 }
+
+@keyframes trendAppear {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 .trend b {
   display: block;
