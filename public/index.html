@@ -251,10 +251,10 @@ generate.addEventListener('click', async () => {
     generate.disabled = !selectedFile;
   }
 });
-
+ <script>
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
-</script>
+ 
 </body></html>
 <!-- обновление TrendVideo AI -->
