@@ -15,14 +15,13 @@
 
 :root {
   color-scheme: dark;
-  --bg: #070817;
-  --panel: #11132d;
-  --panel2: #19183c;
-  --purple: #a43cff;
-  --blue: #168fff;
-  --text: #f8f6ff;
-  --muted: #b7b1d8;
-  --border: rgba(155, 105, 255, .28);
+  --text: #fffaff;
+  --muted: #e0d4ec;
+  --line: rgba(255,255,255,.22);
+  --glass: rgba(255,255,255,.09);
+  --pink: #fa65c7;
+  --purple: #a56bff;
+  --gold: #ffc58c;
 }
 
 html {
@@ -33,13 +32,14 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(ellipse at 15% 5%, rgba(103, 39, 206, .22), transparent 38%),
-    radial-gradient(ellipse at 90% 35%, rgba(0, 111, 255, .13), transparent 38%),
-    var(--bg);
   color: var(--text);
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.5;
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(255,113,180,.35), transparent 38%),
+    radial-gradient(ellipse at 90% 25%, rgba(255,174,113,.23), transparent 35%),
+    radial-gradient(ellipse at 50% 85%, rgba(112,75,205,.35), transparent 45%),
+    linear-gradient(145deg,#17132e,#302044 48%,#11142e);
 }
 
 button, input, textarea, select {
@@ -51,9 +51,9 @@ button {
 }
 
 .wrap {
-  width: min(100% - 32px, 1000px);
-  margin: 0 auto;
-  padding: 28px 0 35px;
+  width: min(100% - 28px, 960px);
+  margin: auto;
+  padding: 24px 0 35px;
 }
 
 header {
@@ -61,65 +61,82 @@ header {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 38px;
+  margin-bottom: 32px;
 }
 
 .logo {
-  color: #fff;
-  font-size: clamp(23px, 5vw, 32px);
+  color: white;
+  font-size: clamp(23px,5vw,32px);
   font-weight: 900;
-  letter-spacing: -1.4px;
-  text-shadow: 0 0 25px rgba(164, 60, 255, .6);
+  letter-spacing: -1.2px;
+  text-shadow: 0 3px 20px rgba(255,111,205,.45);
+}
+
+.logo span,
+h1 span {
+  color: #ffc1e9;
 }
 
 .pill, .tag {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(169, 91, 255, .55);
-  border-radius: 30px;
-  padding: 7px 15px;
-  color: #d5a7ff;
-  background: rgba(113, 43, 196, .15);
+  padding: 8px 15px;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 40px;
+  color: #ffe0f5;
+  background: rgba(255,255,255,.1);
+  backdrop-filter: blur(14px);
   font-size: 12px;
   font-weight: 800;
 }
 
 h1 {
-  max-width: 800px;
-  margin: 15px 0;
-  font-size: clamp(34px, 7vw, 65px);
+  max-width: 760px;
+  margin: 16px 0;
+  font-size: clamp(36px,7vw,66px);
   line-height: 1.08;
   letter-spacing: -2px;
   font-weight: 900;
+  text-shadow: 0 5px 30px rgba(0,0,0,.18);
 }
 
 h1 span {
-  color: #bd75ff;
+  background: linear-gradient(90deg,#ffc0df,#ffb68e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .sub {
   max-width: 650px;
+  margin-bottom: 28px;
   color: var(--muted);
-  font-size: clamp(15px, 3vw, 20px);
-  margin-bottom: 30px;
+  font-size: clamp(15px,3vw,19px);
 }
 
 .card {
   position: relative;
   margin: 15px 0;
-  padding: 24px;
-  border: 1px solid var(--border);
-  border-radius: 27px;
-  background:
-    linear-gradient(135deg, rgba(33, 28, 72, .94), rgba(12, 16, 42, .96));
-  box-shadow: 0 12px 35px rgba(0, 0, 0, .2);
+  padding: 23px;
+  border: 1px solid var(--line);
+  border-radius: 25px;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,.13),
+    rgba(255,255,255,.045)
+  );
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    0 15px 45px rgba(0,0,0,.17),
+    inset 0 1px 0 rgba(255,255,255,.1);
 }
 
 .label {
   display: block;
   margin-bottom: 12px;
-  color: #fff;
+  color: white;
   font-size: 18px;
   font-weight: 800;
 }
@@ -130,19 +147,19 @@ h1 span {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 9px;
   padding: 22px;
-  border: 2px dashed #a56cff;
+  border: 2px dashed rgba(255,190,226,.65);
   border-radius: 22px;
-  background: rgba(112, 57, 195, .09);
-  color: #d9c5ff;
+  background: rgba(255,255,255,.07);
+  color: #ffe2f5;
   text-align: center;
   transition: .2s;
 }
 
 .upload:hover {
-  background: rgba(145, 73, 255, .18);
-  border-color: #c18cff;
+  background: rgba(255,255,255,.15);
+  border-color: #ffd0e9;
 }
 
 #photo {
@@ -152,39 +169,59 @@ h1 span {
 #preview {
   display: block;
   max-width: 100%;
-  max-height: 300px;
+  max-height: 320px;
   margin: 15px auto 0;
-  border-radius: 18px;
+  border: 2px solid rgba(255,255,255,.4);
+  border-radius: 20px;
   object-fit: contain;
-  box-shadow: 0 0 25px rgba(90, 99, 255, .25);
+  box-shadow: 0 10px 35px rgba(0,0,0,.3);
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2,minmax(0,1fr));
   gap: 12px;
 }
 
 .trend {
   min-width: 0;
   padding: 17px;
-  border: 1px solid rgba(132, 103, 225, .3);
+  border: 1px solid rgba(255,255,255,.2);
   border-radius: 19px;
-  background: rgba(25, 25, 59, .85);
-  color: var(--text);
+  background: rgba(255,255,255,.075);
+  color: white;
   text-align: left;
   transition: .2s ease;
 }
 
 .trend:hover {
   transform: translateY(-2px);
-  border-color: #a65bff;
+  background: rgba(255,255,255,.14);
 }
 
 .trend.active {
-  border: 2px solid #a94bff;
-  background: linear-gradient(135deg, rgba(118, 48, 220, .35), rgba(31, 48, 112, .5));
-  box-shadow: 0 0 22px rgba(148, 67, 255, .2);
+  border: 2px solid #ffb8e6;
+  background: linear-gradient(
+    125deg,
+    rgba(250,101,199,.27),
+    rgba(255,191,139,.16)
+  );
+  box-shadow: 0 0 24px rgba(250,101,199,.2);
+}
+
+.trend b {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.trend small {
+  display: block;
+  margin-top: 4px;
+  color: #e5d7ec;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 textarea,
@@ -193,34 +230,34 @@ select {
   width: 100%;
   min-width: 0;
   padding: 14px 16px;
-  border: 1px solid rgba(143, 119, 218, .4);
+  border: 1px solid rgba(255,255,255,.24);
   border-radius: 15px;
   outline: none;
-  background: #0c1028;
-  color: #fff;
+  background: rgba(20,17,43,.62);
+  color: white;
   transition: .2s;
 }
 
 textarea {
-  min-height: 100px;
+  min-height: 105px;
   resize: vertical;
 }
 
 textarea:focus,
 input:focus,
 select:focus {
-  border-color: #a34cff;
-  box-shadow: 0 0 0 3px rgba(163, 76, 255, .15);
+  border-color: #ffb8e6;
+  box-shadow: 0 0 0 3px rgba(255,184,230,.15);
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #8983ad;
+  color: #c6b5d1;
 }
 
 .note {
   margin-top: 9px;
-  color: var(--muted);
+  color: #dfd0e8;
   font-size: 13px;
 }
 
@@ -238,48 +275,57 @@ textarea::placeholder {
 
 #priceEstimate {
   padding: 16px;
-  border: 1px solid rgba(150, 82, 255, .6);
+  border: 1px solid rgba(255,198,220,.4);
   border-radius: 18px;
-  background: linear-gradient(120deg, #40118a, #172c78);
-  color: #fff;
+  background: linear-gradient(
+    120deg,
+    rgba(191,91,164,.38),
+    rgba(223,145,112,.3)
+  );
+  color: white;
   font-weight: 800;
 }
 
 #generate {
   display: block;
   width: 100%;
-  min-height: 58px;
+  min-height: 59px;
   margin: 22px 0;
-  border: 0;
+  border: 1px solid rgba(255,255,255,.35);
   border-radius: 50px;
-  background: linear-gradient(100deg, #b52bff, #6538f5, #079cf5);
+  background: linear-gradient(100deg,#e74fc0,#a55af4,#ffad82);
   color: white;
   font-size: 18px;
   font-weight: 900;
-  box-shadow: 0 8px 30px rgba(120, 53, 255, .4);
+  box-shadow: 0 9px 30px rgba(225,83,183,.3);
   transition: .2s;
 }
 
 #generate:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 35px rgba(120, 53, 255, .6);
+  box-shadow: 0 12px 35px rgba(225,83,183,.45);
 }
 
 #generate:active {
   transform: scale(.98);
 }
 
+#generate:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
 .status {
   margin: 14px 0;
-  color: #d2c5ff;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: #ffe2f5;
   text-align: center;
 }
 
 #result {
   margin-top: 20px;
-  padding: 15px;
-  border-radius: 18px;
-  background: var(--panel);
 }
 
 #videoResult {
@@ -294,7 +340,7 @@ textarea::placeholder {
   margin-top: 12px;
   padding: 12px 20px;
   border-radius: 30px;
-  background: #7139d9;
+  background: linear-gradient(100deg,#e74fc0,#a55af4);
   color: white;
   text-decoration: none;
   font-weight: 800;
@@ -302,19 +348,19 @@ textarea::placeholder {
 
 footer {
   padding: 20px 10px;
-  color: #8f89b5;
+  color: #c8b6d5;
   font-size: 12px;
   text-align: center;
 }
 
-@media (max-width: 600px) {
+@media (max-width:600px) {
   .wrap {
-    width: min(100% - 22px, 1000px);
-    padding-top: 18px;
+    width: min(100% - 22px,960px);
+    padding-top: 17px;
   }
 
   header {
-    margin-bottom: 27px;
+    margin-bottom: 25px;
   }
 
   .card {
@@ -392,7 +438,7 @@ footer {
 
 <section class="card">
 <label class="label" for="accessCode">Защитный код доступа</label>
-<input id="accessCode" type="password" autocomplete="off" placeholder="Введи код, который настроим в Netlify" style="width:100%;border:1px solid var(--line);background:#11131e;color:var(--text);border-radius:12px;padding:12px;font:inherit">
+<input id="accessCode" type="password" autocomplete="off" placeholder="Введи код, который настроим в Netlify"> 
 <p class="note">Код нужен, чтобы посторонние не могли запускать платную генерацию на твоём аккаунте.</p>
 </section>
 <button class="primary" id="generate" disabled>Создать видео ✨</button>
