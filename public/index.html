@@ -8,35 +8,133 @@
 <link rel="manifest" href="manifest.webmanifest">
 <title>TrendVideo AI</title>
 <style>
-:root{--bg:#10111a;--panel:#191b28;--panel2:#222538;--text:#f7f7fb;--muted:#a7abc0;--accent:#a78bfa;--accent2:#6ee7d8;--line:#303349}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#292344 0,#10111a 48%);color:var(--text);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-.wrap{max-width:620px;margin:auto;padding:22px 16px 48px}
-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-.logo{font-weight:850;letter-spacing:-.5px;font-size:20px}.logo span{color:var(--accent)}
-.pill{font-size:11px;color:#d9d2ff;border:1px solid #514477;background:#28213e;padding:5px 9px;border-radius:30px}
-h1{font-size:30px;line-height:1.1;letter-spacing:-1px;margin:12px 0}
-.sub{color:var(--muted);margin:0 0 22px;font-size:14px}
-.card{background:rgba(25,27,40,.94);border:1px solid var(--line);border-radius:20px;padding:16px;margin:14px 0;box-shadow:0 12px 36px #0002}
-.label{font-size:13px;font-weight:750;margin:0 0 10px;display:block}
-.upload{border:1.5px dashed #64617e;border-radius:16px;padding:20px 14px;text-align:center;background:#202033;cursor:pointer;display:block}
-.upload strong{display:block;margin:7px 0 3px}.upload small{color:var(--muted)}
-input[type=file]{display:none}
-#preview{width:100%;max-height:260px;object-fit:contain;border-radius:12px;margin-top:12px;display:none;background:#0b0c12}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
-.trend{background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:12px;border-radius:14px;text-align:left;cursor:pointer;min-height:74px}
-.trend b{display:block;font-size:13px}.trend small{color:var(--muted);font-size:11px}
-.trend.active{border-color:var(--accent);background:#30294a;box-shadow:inset 0 0 0 1px var(--accent)}
-textarea,select{width:100%;border:1px solid var(--line);background:#11131e;color:var(--text);border-radius:12px;padding:12px;font:inherit}
-textarea{min-height:112px;resize:vertical}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-select{padding:11px}
-button.primary{width:100%;border:0;border-radius:14px;padding:15px 18px;background:linear-gradient(100deg,#9b7af4,#6a9df7);color:#11111a;font-weight:850;font-size:16px;cursor:pointer;margin-top:6px}
-button.primary:disabled{opacity:.45;cursor:not-allowed}
-.note{font-size:12px;color:var(--muted);margin:10px 2px 0}
-.status{display:none;border:1px solid #65533b;background:#30291e;color:#ffe4b2;padding:13px;border-radius:13px;margin-top:14px;font-size:13px}
-footer{color:#777c94;font-size:11px;text-align:center;margin:26px 0 0}
-.tag{display:inline-block;border-radius:20px;background:#202d35;color:#a6f4e9;padding:4px 8px;font-size:11px;margin-bottom:7px}
-@media(min-width:560px){.wrap{padding-top:34px}h1{font-size:36px}}
+
+:root {
+  --bg: #080b16;
+  --panel: #11172a;
+  --panel2: #171f36;
+  --text: #f5f7ff;
+  --muted: #929bb5;
+  --accent: #8b5cf6;
+  --accent2: #22d3ee;
+  --border: rgba(255,255,255,.09);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 15% 0%, rgba(139,92,246,.2), transparent 40%),
+    radial-gradient(ellipse at 90% 15%, rgba(34,211,238,.12), transparent 35%),
+    var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+}
+
+.container {
+  width: min(100% - 28px, 760px);
+  margin: 0 auto;
+  padding: 28px 0 50px;
+}
+
+h1, h2, h3 {
+  color: var(--text);
+  letter-spacing: -.5px;
+}
+
+h1 {
+  font-size: clamp(30px, 7vw, 46px);
+  line-height: 1.12;
+  font-weight: 850;
+}
+
+p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  transition: transform .2s, filter .2s, border-color .2s;
+}
+
+button:active {
+  transform: scale(.98);
+}
+
+.card, .panel, .upload-box, .result-box {
+  background: linear-gradient(145deg, rgba(23,31,54,.96), rgba(14,19,36,.96));
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 14px 40px rgba(0,0,0,.2);
+}
+
+.upload-box {
+  border: 1.5px dashed rgba(139,92,246,.65);
+  text-align: center;
+  padding: 30px 18px;
+}
+
+button.primary, .primary-button, #generateBtn {
+  border: 0;
+  border-radius: 15px;
+  padding: 15px 22px;
+  color: white;
+  font-weight: 750;
+  background: linear-gradient(100deg, #7c3aed, #2563eb, #0891b2);
+  box-shadow: 0 8px 25px rgba(99,102,241,.28);
+}
+
+button.primary:hover, .primary-button:hover, #generateBtn:hover {
+  filter: brightness(1.12);
+}
+
+input, select, textarea {
+  width: 100%;
+  background: #0b1020;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 13px 14px;
+  outline: none;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(139,92,246,.15);
+}
+
+img {
+  max-width: 100%;
+  border-radius: 14px;
+}
+
+@media (max-width: 600px) {
+  .container {
+    width: min(100% - 22px, 760px);
+    padding-top: 18px;
+  }
+
+  .card, .panel, .upload-box, .result-box {
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  button.primary, .primary-button, #generateBtn {
+    width: 100%;
+    min-height: 50px;
+  }
+}
+
 </style>
 </head>
 <body>
