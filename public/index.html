@@ -98,6 +98,7 @@ footer{color:#777c94;font-size:11px;text-align:center;margin:26px 0 0}
 <footer>TrendVideo AI · тестовая версия · генерация выполняется через fal.ai</footer>
 </main>
 <script>
+
 const photo = document.getElementById('photo');
 const preview = document.getElementById('preview');
 const promptBox = document.getElementById('prompt');
@@ -109,21 +110,25 @@ const downloadVideo = document.getElementById('downloadVideo');
 const accessCodeBox = document.getElementById('accessCode');
 const durationBox = document.getElementById('duration');
 const qualityBox = document.getElementById('quality');
+
 let selectedFile = null;
 let busy = false;
-
-const MODEL = 'fal-ai/vidu/q4/image-to-video';
+let previewUrl = null;
 
 function estimatePrice() {
   const seconds = Number(durationBox.value);
   const quality = qualityBox.value;
-  // fal.ai promotional rates currently run through 30 Nov 2026; prices can change.
   const promo = new Date() <= new Date('2026-11-30T23:59:59');
-  const perSecond = quality === '540p' ? (promo ? 0.0315 : 0.045) : (promo ? 0.0665 : 0.095);
+  const perSecond = quality === '540p'
+    ? (promo ? 0.0315 : 0.045)
+    : (promo ? 0.0665 : 0.095);
+
   const total = seconds * perSecond;
+
   document.getElementById('priceEstimate').textContent =
-    `Примерная цена: $${total.toFixed(2)} за ${seconds} сек. (${quality}). Тариф fal.ai может измениться — перед запуском проверь актуальную цену.`;
-  return { total, perSecond, promo };
+    `Примерная цена: $${total.toFixed(2)} за ${seconds} сек. (${quality}). Тариф fal.ai может измениться.`;
+
+  return { total, promo };
 }
 
 durationBox.addEventListener('change', estimatePrice);
@@ -132,26 +137,52 @@ estimatePrice();
 
 photo.addEventListener('change', () => {
   selectedFile = photo.files && photo.files[0];
-  if (!selectedFile) { generate.disabled = true; return; }
+
+  if (!selectedFile) {
+    generate.disabled = true;
+    return;
+  }
+
   if (!['image/jpeg', 'image/png', 'image/webp'].includes(selectedFile.type)) {
-    alert('Выбери JPG, PNG или WEBP.'); photo.value = ''; selectedFile = null; return;
+    alert('Выбери фото в формате JPG, PNG или WEBP.');
+    photo.value = '';
+    selectedFile = null;
+    generate.disabled = true;
+    return;
   }
+
   if (selectedFile.size > 12 * 1024 * 1024) {
-    alert('Файл слишком большой. Выбери фото до 12 МБ.'); photo.value = ''; selectedFile = null; return;
+    alert('Фото слишком большое. Выбери файл до 12 МБ.');
+    photo.value = '';
+    selectedFile = null;
+    generate.disabled = true;
+    return;
   }
-  preview.src = URL.createObjectURL(selectedFile);
+
+  if (previewUrl) URL.revokeObjectURL(previewUrl);
+  previewUrl = URL.createObjectURL(selectedFile);
+
+  preview.src = previewUrl;
   preview.style.display = 'block';
   generate.disabled = false;
+
   statusBox.style.display = 'none';
   resultBox.style.display = 'none';
+  videoResult.removeAttribute('src');
+  downloadVideo.removeAttribute('href');
 });
 
-document.querySelectorAll('.trend').forEach((btn) => btn.addEventListener('click', () => {
-  document.querySelectorAll('.trend').forEach((item) => item.classList.remove('active'));
-  btn.classList.add('active');
-  promptBox.value = btn.dataset.prompt;
-}));
-// Put the selected trend text into the prompt on first load.
+document.querySelectorAll('.trend').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.trend').forEach((item) => {
+      item.classList.remove('active');
+    });
+
+    btn.classList.add('active');
+    promptBox.value = btn.dataset.prompt;
+  });
+});
+
 const firstTrend = document.querySelector('.trend.active');
 if (firstTrend) promptBox.value = firstTrend.dataset.prompt;
 
@@ -165,70 +196,156 @@ function showStatus(message, isError = false) {
 }
 
 async function compressPhoto(file) {
-  const bitmap = await createImageBitmap(file);
-  const maxSide = 1280;
-  const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  bitmap.close();
-  return canvas.toDataURL('image/jpeg', 0.82);
+  let bitmap;
+
+  try {
+    bitmap = await createImageBitmap(file);
+
+    const maxSide = 1280;
+    const scale = Math.min(
+      1,
+      maxSide / Math.max(bitmap.width, bitmap.height)
+    );
+
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+      throw new Error('Не удалось обработать фотографию.');
+    }
+
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+    const imageData = canvas.toDataURL('image/jpeg', 0.82);
+
+    if (imageData.length > 5000000) {
+      throw new Error('Фото после сжатия слишком большое. Попробуй выбрать другое фото.');
+    }
+
+    return imageData;
+  } catch (error) {
+    if (error.message) throw error;
+    throw new Error('Не удалось обработать фото. Попробуй другое изображение.');
+  } finally {
+    if (bitmap) bitmap.close();
+  }
 }
 
 async function postFunction(name, payload) {
-  const response = await fetch(`/.netlify/functions/${name}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+  let response;
+
+  try {
+    response = await fetch(`/.netlify/functions/${name}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch {
+    throw new Error('Нет соединения с сервером. Проверь интернет и попробуй ещё раз.');
+  }
+
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error || `Ошибка сервера (${response.status})`);
+
+  if (!response.ok) {
+    throw new Error(
+      data.error || `Ошибка сервера (${response.status}). Попробуй позже.`
+    );
+  }
+
   return data;
 }
 
 async function waitForVideo(requestId, accessCode) {
   const startedAt = Date.now();
+
   while (Date.now() - startedAt < 10 * 60 * 1000) {
     await new Promise((resolve) => setTimeout(resolve, 5000));
-    const data = await postFunction('generation-status', { requestId, accessCode });
+
+    const data = await postFunction('generation-status', {
+      requestId,
+      accessCode
+    });
+
     if (data.status === 'IN_QUEUE') {
-      showStatus(`Задание в очереди fal.ai. Место в очереди: ${data.queuePosition ?? '—'}.`);
+      showStatus(
+        `Задание в очереди fal.ai. Место: ${data.queuePosition ?? '—'}.`
+      );
       continue;
     }
+
     if (data.status === 'IN_PROGRESS') {
       showStatus('Видео создаётся. Это может занять несколько минут…');
       continue;
     }
-    if (data.status === 'COMPLETED' && data.videoUrl) return data.videoUrl;
-    if (data.status === 'FAILED') throw new Error(data.error || 'fal.ai не смог создать видео.');
+
+    if (data.status === 'COMPLETED' && data.videoUrl) {
+      return data.videoUrl;
+    }
+
+    if (data.status === 'FAILED') {
+      throw new Error(data.error || 'Не удалось создать видео.');
+    }
+
+    throw new Error('Сервис вернул неизвестный статус задания.');
   }
-  throw new Error('Генерация длится дольше обычного. Задание могло продолжиться в fal.ai; попробуй проверить позже.');
+
+  throw new Error(
+    'Генерация длится дольше обычного. Попробуй проверить позже.'
+  );
 }
 
 generate.addEventListener('click', async () => {
   if (!selectedFile || busy) return;
+
   const prompt = promptBox.value.trim();
   const accessCode = accessCodeBox.value.trim();
-  if (!prompt) { alert('Добавь описание видео.'); promptBox.focus(); return; }
-  if (!accessCode) { alert('Введи защитный код доступа.'); accessCodeBox.focus(); return; }
-  const { total, perSecond, promo } = estimatePrice();
+
+  if (!prompt) {
+    alert('Добавь описание видео.');
+    promptBox.focus();
+    return;
+  }
+
+  if (!accessCode) {
+    alert('Введи защитный код доступа.');
+    accessCodeBox.focus();
+    return;
+  }
+
+  const { total, promo } = estimatePrice();
   const seconds = Number(durationBox.value);
   const quality = qualityBox.value;
-  const promoText = promo ? 'Сейчас действует промо-тариф, который может измениться.' : 'Использован опубликованный обычный тариф; цена может измениться.';
+
+  const promoText = promo
+    ? 'Сейчас действует промо-тариф, который может измениться.'
+    : 'Использован обычный тариф, цена может измениться.';
+
   const consent = window.confirm(
-    `ВНИМАНИЕ: это платная генерация через fal.ai.\n\nМодель: Vidu Q4\nДлительность: ${seconds} сек.\nКачество: ${quality}\nПримерная стоимость: $${total.toFixed(2)}\n\n${promoText}\n\nПродолжить и отправить фото на обработку?`
+    `ВНИМАНИЕ: это платная генерация через fal.ai.\n\n` +
+    `Модель: Vidu Q4\n` +
+    `Длительность: ${seconds} сек.\n` +
+    `Качество: ${quality}\n` +
+    `Примерная стоимость: $${total.toFixed(2)}\n\n` +
+    `${promoText}\n\n` +
+    `Продолжить и отправить фото на обработку?`
   );
+
   if (!consent) return;
 
   busy = true;
   generate.disabled = true;
   resultBox.style.display = 'none';
+
   showStatus('Подготавливаю фотографию…');
+
   try {
     const imageData = await compressPhoto(selectedFile);
+
     showStatus('Отправляю задание в fal.ai…');
+
     const submitted = await postFunction('start-generation', {
       accessCode,
       imageData,
@@ -236,16 +353,32 @@ generate.addEventListener('click', async () => {
       duration: seconds,
       resolution: quality
     });
+
+    if (!submitted.requestId) {
+      throw new Error('Сервер не вернул номер задания.');
+    }
+
     showStatus('Задание принято. Ожидаем создание видео…');
-    const videoUrl = await waitForVideo(submitted.requestId, accessCode);
+
+    const videoUrl = await waitForVideo(
+      submitted.requestId,
+      accessCode
+    );
+
     videoResult.src = videoUrl;
     downloadVideo.href = videoUrl;
     downloadVideo.download = 'trendvideo-ai.mp4';
+
     resultBox.style.display = 'block';
+
     showStatus('Готово! Видео создано. Его можно посмотреть или скачать.');
     resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
   } catch (error) {
-    showStatus(error.message || 'Не удалось создать видео. Проверь настройки и попробуй позже.', true);
+    showStatus(
+      error.message || 'Не удалось создать видео. Попробуй позже.',
+      true
+    );
   } finally {
     busy = false;
     generate.disabled = !selectedFile;
