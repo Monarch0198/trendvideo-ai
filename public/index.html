@@ -257,7 +257,21 @@ h1 span {
 }
 
 
-.trend b {
+.trend img {
+  display: block;
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 600px) {
+  .trend img {
+    height: 105px;
+  }
+}
+  .trend b {
   display: block;
   margin-bottom: 5px;
   font-size: 16px;
@@ -453,13 +467,36 @@ footer {
 
 <section class="card">
 <label class="label">2. Выбери идею</label>
+
 <div class="grid" id="trends">
-<button class="trend active" data-prompt="A person suddenly appears from behind a haystack, surprises the other person, then performs a funny energetic dance facing them. Photorealistic live-action, natural movements."><b>🌾 Сюрприз из сена</b><small>Неожиданное появление и танец</small></button>
-<button class="trend" data-prompt="The person in the photo performs a funny energetic dance, with natural realistic body movement and expressive facial reactions. Photorealistic live-action."><b>🕺 Танцевальный тренд</b><small>Весёлый танец</small></button>
-<button class="trend" data-prompt="The person in the photo transforms into a cinematic action hero, with a dramatic reveal, realistic lighting and natural movement."><b>🎬 Герой фильма</b><small>Кинематографичный образ</small></button>
-<button class="trend" data-prompt="The person in the photo reacts with exaggerated surprise to an unexpected funny event, then laughs. Photorealistic live-action."><b>😂 Смешная реакция</b><small>Неожиданный момент</small></button>
+
+<button class="trend active" data-prompt="A person suddenly appears from behind a haystack, surprises the other person, then performs a funny energetic dance facing them. Photorealistic live-action, natural movements.">
+<img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600" alt="Сюрприз из сена">
+<b>🌾 Сюрприз из сена</b>
+<small>Неожиданное появление и танец</small>
+</button>
+
+<button class="trend" data-prompt="The person in the photo performs a funny energetic dance, with natural realistic body movement and expressive facial reactions. Photorealistic live-action.">
+<img src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=600" alt="Танцевальный тренд">
+<b>🕺 Танцевальный тренд</b>
+<small>Весёлый танец</small>
+</button>
+
+<button class="trend" data-prompt="The person in the photo transforms into a cinematic action hero, with a dramatic reveal, realistic lighting and natural movement.">
+<img src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=600" alt="Герой фильма">
+<b>🎬 Герой фильма</b>
+<small>Кинематографичный образ</small>
+</button>
+
+<button class="trend" data-prompt="The person in the photo reacts with exaggerated surprise to an unexpected funny event, then laughs. Photorealistic live-action.">
+<img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600" alt="Смешная реакция">
+<b>😂 Смешная реакция</b>
+<small>Неожиданный момент</small>
+</button>
+
 </div>
 </section>
+
 
 <section class="card">
 <label class="label" for="prompt">3. Опиши своё видео</label>
