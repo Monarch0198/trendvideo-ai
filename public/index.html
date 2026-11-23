@@ -509,7 +509,7 @@ footer {
   </button>
 
   <div id="secondCharacterUpload" style="display:none;margin-top:15px">
-    <label class="upload" for="secondPhoto">
+    <label class="upload" for="secondPhoto" id="secondPhotoUploadLabel">
       <strong>Выбрать фотографию девушки</strong>
       <small>JPG, PNG или WEBP</small>
     </label>
@@ -697,6 +697,7 @@ if (firstTrend) promptBox.value = firstTrend.dataset.description || '';
 const secondCharacterCard = document.getElementById('secondCharacterCard');
 const changeSecondCharacter = document.getElementById('changeSecondCharacter');
 const secondCharacterUpload = document.getElementById('secondCharacterUpload');
+const secondPhotoUploadLabel = document.getElementById('secondPhotoUploadLabel');
 const secondPhoto = document.getElementById('secondPhoto');
 const secondPreview = document.getElementById('secondPreview');
 const removeSecondPhoto = document.getElementById('removeSecondPhoto');
@@ -707,6 +708,7 @@ removeSecondPhoto.addEventListener('click', () => {
   secondPreview.style.display = 'none';
   removeSecondPhoto.style.display = 'none';
 secondCharacterUpload.style.display = 'block';
+  secondPhotoUploadLabel.style.display = 'flex';
   if (secondPreview.dataset.url) {
     URL.revokeObjectURL(secondPreview.dataset.url);
     secondPreview.dataset.url = '';
@@ -758,7 +760,7 @@ secondPhoto.addEventListener('change', () => {
   secondPreview.dataset.url = url;
   secondPreview.src = url;
   secondPreview.style.display = 'block';
-  secondCharacterUpload.style.display = 'none';
+  secondPhotoUploadLabel.style.display = 'none';
   removeSecondPhoto.style.display = 'block';
 });
 
