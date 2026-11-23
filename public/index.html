@@ -681,6 +681,8 @@ photoUploadLabel.style.display = 'none';
   downloadVideo.removeAttribute('href');
 });
 
+let selectedTrendPrompt = '';
+
 document.querySelectorAll('.trend').forEach((btn) => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.trend').forEach((item) => {
@@ -688,12 +690,16 @@ document.querySelectorAll('.trend').forEach((btn) => {
     });
 
     btn.classList.add('active');
+    selectedTrendPrompt = btn.dataset.prompt || '';
     promptBox.value = btn.dataset.description || '';
   });
 });
-
 const firstTrend = document.querySelector('.trend.active');
-if (firstTrend) promptBox.value = firstTrend.dataset.description || '';
+
+if (firstTrend) {
+  selectedTrendPrompt = firstTrend.dataset.prompt || '';
+  promptBox.value = firstTrend.dataset.description || '';
+}
 const secondCharacterCard = document.getElementById('secondCharacterCard');
 const changeSecondCharacter = document.getElementById('changeSecondCharacter');
 const secondCharacterUpload = document.getElementById('secondCharacterUpload');
