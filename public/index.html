@@ -480,7 +480,9 @@ footer {
   <small>JPG, PNG или WEBP · лучше одно чёткое фото</small>
 </label>
 <input id="photo" type="file" accept="image/png,image/jpeg,image/webp">
-<img id="preview" alt="Предпросмотр загруженной фотографии">
+<img id="preview" alt="Предпросмотр загруженной фотографии"> <button type="button" id="removePhoto" style="display:none;width:100%;margin-top:12px;padding:12px;border-radius:14px;background:#48243e;color:white;border:1px solid #fa55d4">
+  ✖ Убрать фотографию
+</button>
 </section>
 
 <section class="card" id="secondCharacterCard" style="display:none">
@@ -585,6 +587,17 @@ footer {
 
 const photo = document.getElementById('photo');
 const preview = document.getElementById('preview');
+const removePhoto = document.getElementById('removePhoto');
+removePhoto.addEventListener('click', () => {
+  photo.value = '';
+  selectedFile = null;
+  preview.src = '';
+  preview.style.display = 'none';
+  removePhoto.style.display = 'none';
+  if (previewUrl) URL.revokeObjectURL(previewUrl);
+  previewUrl = null;
+  generate.disabled = true;
+});
 const promptBox = document.getElementById('prompt');
 const generate = document.getElementById('generate');
 const statusBox = document.getElementById('status');
@@ -652,8 +665,9 @@ photo.addEventListener('change', () => {
   previewUrl = URL.createObjectURL(selectedFile);
 
   preview.src = previewUrl;
-  preview.style.display = 'block';
-  generate.disabled = false;
+preview.style.display = 'block';
+removePhoto.style.display = 'block';
+generate.disabled = false;
 
   statusBox.style.display = 'none';
   resultBox.style.display = 'none';
