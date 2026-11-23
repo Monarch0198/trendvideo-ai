@@ -671,7 +671,61 @@ document.querySelectorAll('.trend').forEach((btn) => {
 
 const firstTrend = document.querySelector('.trend.active');
 if (firstTrend) promptBox.value = firstTrend.dataset.description || '';
+const secondCharacterCard = document.getElementById('secondCharacterCard');
+const changeSecondCharacter = document.getElementById('changeSecondCharacter');
+const secondCharacterUpload = document.getElementById('secondCharacterUpload');
+const secondPhoto = document.getElementById('secondPhoto');
+const secondPreview = document.getElementById('secondPreview');
 
+function updateSecondCharacterVisibility() {
+  const activeTrend = document.querySelector('.trend.active');
+  const isHayEffect = activeTrend &&
+    activeTrend.dataset.description &&
+    activeTrend.dataset.description.includes('Румпель');
+
+  secondCharacterCard.style.display = isHayEffect ? 'block' : 'none';
+
+  if (!isHayEffect) {
+    secondCharacterUpload.style.display = 'none';
+  }
+}
+
+document.querySelectorAll('.trend').forEach((btn) => {
+  btn.addEventListener('click', updateSecondCharacterVisibility);
+});
+
+changeSecondCharacter.addEventListener('click', () => {
+  secondCharacterUpload.style.display =
+    secondCharacterUpload.style.display === 'none' ? 'block' : 'none';
+});
+
+secondPhoto.addEventListener('change', () => {
+  const file = secondPhoto.files && secondPhoto.files[0];
+  if (!file) return;
+
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    alert('Выбери фото в формате JPG, PNG или WEBP.');
+    secondPhoto.value = '';
+    return;
+  }
+
+  if (file.size > 12 * 1024 * 1024) {
+    alert('Фото слишком большое. Выбери файл до 12 МБ.');
+    secondPhoto.value = '';
+    return;
+  }
+
+  if (secondPreview.dataset.url) {
+    URL.revokeObjectURL(secondPreview.dataset.url);
+  }
+
+  const url = URL.createObjectURL(file);
+  secondPreview.dataset.url = url;
+  secondPreview.src = url;
+  secondPreview.style.display = 'block';
+});
+
+updateSecondCharacterVisibility();
 function showStatus(message, isError = false) {
   statusBox.style.display = 'block';
   statusBox.style.borderColor = isError ? '#8a4545' : '#65533b';
