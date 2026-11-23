@@ -688,10 +688,10 @@ document.querySelectorAll('.trend').forEach((btn) => {
     document.querySelectorAll('.trend').forEach((item) => {
       item.classList.remove('active');
     });
-
-    btn.classList.add('active');
-    selectedTrendPrompt = btn.dataset.prompt || '';
-    promptBox.value = btn.dataset.description || '';
+btn.classList.add('active');
+selectedTrendPrompt = btn.dataset.prompt || '';
+promptBox.value = btn.dataset.description || '';
+console.log('Выбран промпт:', selectedTrendPrompt);
   });
 });
 const firstTrend = document.querySelector('.trend.active');
@@ -699,6 +699,7 @@ const firstTrend = document.querySelector('.trend.active');
 if (firstTrend) {
   selectedTrendPrompt = firstTrend.dataset.prompt || '';
   promptBox.value = firstTrend.dataset.description || '';
+  console.log('Выбран промпт:', selectedTrendPrompt);
 }
 const secondCharacterCard = document.getElementById('secondCharacterCard');
 const changeSecondCharacter = document.getElementById('changeSecondCharacter');
