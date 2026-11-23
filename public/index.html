@@ -474,7 +474,7 @@ footer {
 </section>
 <section class="card">
 <label class="label">1. Загрузи фотографию</label>
-<label class="upload" for="photo">
+<label class="upload" for="photo" id="photoUploadLabel">
   <div style="font-size:30px">＋</div>
   <strong>Нажми, чтобы выбрать фото</strong>
   <small>JPG, PNG или WEBP · лучше одно чёткое фото</small>
@@ -517,6 +517,10 @@ footer {
       accept="image/png,image/jpeg,image/webp" style="display:none">
     <img id="secondPreview" alt="Фото девушки"
       style="display:none;max-width:100%;max-height:250px;margin:15px auto 0;border-radius:16px">
+    <button type="button" id="removeSecondPhoto"
+  style="display:none;width:100%;margin-top:12px;padding:12px;border-radius:14px;background:#48243e;color:white;border:1px solid #fa55d4">
+  ✖ Убрать фотографию девушки
+    </button>
   </div>
 </section>
 
@@ -588,12 +592,14 @@ footer {
 const photo = document.getElementById('photo');
 const preview = document.getElementById('preview');
 const removePhoto = document.getElementById('removePhoto');
+const photoUploadLabel = document.getElementById('photoUploadLabel');
 removePhoto.addEventListener('click', () => {
   photo.value = '';
   selectedFile = null;
   preview.src = '';
   preview.style.display = 'none';
   removePhoto.style.display = 'none';
+  photoUploadLabel.style.display = 'flex';
   if (previewUrl) URL.revokeObjectURL(previewUrl);
   previewUrl = null;
   generate.disabled = true;
@@ -668,7 +674,7 @@ photo.addEventListener('change', () => {
 preview.style.display = 'block';
 removePhoto.style.display = 'block';
 generate.disabled = false;
-
+photoUploadLabel.style.display = 'none';
   statusBox.style.display = 'none';
   resultBox.style.display = 'none';
   videoResult.removeAttribute('src');
@@ -693,7 +699,19 @@ const changeSecondCharacter = document.getElementById('changeSecondCharacter');
 const secondCharacterUpload = document.getElementById('secondCharacterUpload');
 const secondPhoto = document.getElementById('secondPhoto');
 const secondPreview = document.getElementById('secondPreview');
+const removeSecondPhoto = document.getElementById('removeSecondPhoto');
 
+removeSecondPhoto.addEventListener('click', () => {
+  secondPhoto.value = '';
+  secondPreview.src = '';
+  secondPreview.style.display = 'none';
+  removeSecondPhoto.style.display = 'none';
+
+  if (secondPreview.dataset.url) {
+    URL.revokeObjectURL(secondPreview.dataset.url);
+    secondPreview.dataset.url = '';
+  }
+});
 function updateSecondCharacterVisibility() {
   const activeTrend = document.querySelector('.trend.active');
   const isHayEffect = activeTrend &&
@@ -740,6 +758,7 @@ secondPhoto.addEventListener('change', () => {
   secondPreview.dataset.url = url;
   secondPreview.src = url;
   secondPreview.style.display = 'block';
+  removeSecondPhoto.style.display = 'block';
 });
 
 updateSecondCharacterVisibility();
