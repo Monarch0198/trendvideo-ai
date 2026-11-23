@@ -549,17 +549,22 @@ let previewUrl = null;
 function estimatePrice() {
   const seconds = Number(durationBox.value);
   const quality = qualityBox.value;
-  const promo = new Date() <= new Date('2026-11-30T23:59:59');
-  const perSecond = quality === '540p'
-    ? (promo ? 0.0315 : 0.045)
-    : (promo ? 0.0665 : 0.095);
 
-  const total = seconds * perSecond;
+  const prices = {
+    "5-540p": 199,
+    "5-720p": 249,
+    "8-540p": 249,
+    "8-720p": 329,
+    "10-540p": 299,
+    "10-720p": 399
+  };
+
+  const price = prices[`${seconds}-${quality}`];
 
   document.getElementById('priceEstimate').textContent =
-    `Примерная цена: $${total.toFixed(2)} за ${seconds} сек. (${quality}). Тариф fal.ai может измениться.`;
+    `Стоимость видео: ${price} ₽`;
 
-  return { total, promo };
+  return { price };
 }
 
 durationBox.addEventListener('change', estimatePrice);
@@ -729,6 +734,9 @@ async function waitForVideo(requestId, accessCode) {
 }
 
 generate.addEventListener('click', async () => {
+  alert('Сайт пока в тестовом режиме. Оплата ещё не подключена, поэтому создание видео временно недоступно.');
+  return;
+
   if (!selectedFile || busy) return;
 
   const prompt = promptBox.value.trim();
