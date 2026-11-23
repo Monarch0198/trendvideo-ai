@@ -487,26 +487,24 @@ footer {
 <label class="label">2. Выбери идею</label>
 
 <div class="grid" id="trends">
-
-<button class="trend active" data-prompt="The viral Rumpelstiltskin character suddenly peeks out from behind a large haystack, looks at the camera with a mischievous expression, then climbs out and performs his iconic funny tiptoe dance. Keep the character recognizable, with curly light hair, a dark sparkling suit and bow tie. Photorealistic live-action, natural movements.">
+<button class="trend active" data-description="Румпель неожиданно выглядывает из-за стога сена, вылезает и начинает смешно танцевать." data-prompt="The viral Rumpelstiltskin character suddenly peeks out from behind a large haystack, looks at the camera with a mischievous expression, then climbs out and performs his iconic funny tiptoe dance. Keep the character recognizable, with curly light hair, a dark sparkling suit and bow tie. Photorealistic live-action, natural movements.">
 <img src="https://media.tenor.com/Fd2g_XOPaYwAAAAe/rumpelstiltskin.png" alt="Румпель в сене">
 <b>🌾 Сюрприз из сена</b>
 <small>Неожиданное появление и танец</small>
 </button>
 
-<button class="trend" data-prompt="The young man in the photo performs an energetic dance with dynamic full-body movements, moving his arms and legs rhythmically. Colorful neon lights glow around him. Keep his appearance recognizable. Realistic body movement, lively dance, photorealistic live-action.">
+<button class="trend" data-description="Человек на фото исполняет энергичный танец под музыку." data-prompt="The young man in the photo performs an energetic dance with dynamic full-body movements, moving his arms and legs rhythmically. Colorful neon lights glow around him. Keep his appearance recognizable. Realistic body movement, lively dance, photorealistic live-action.">
 <img src="https://images.pexels.com/photos/8119460/pexels-photo-8119460.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Парень танцует">
 <b>🕺 Танцевальный тренд</b>
 <small>Весёлый танец</small>
 </button>
-
-<button class="trend" data-prompt="The person in the photo transforms into a cinematic action hero, with a dramatic reveal, realistic lighting and natural movement.">
+<button class="trend" data-description="Человек на фото превращается в героя захватывающего фильма." data-prompt="The young man in the photo transforms into a cinematic action hero, with a dramatic reveal, realistic lighting and natural movement.">
 <img src="https://images.unsplash.com/photo-1758599543113-8ee1132ffe65?auto=format&fit=crop&w=600" alt="Супергерой">
 <b>🎬 Герой фильма</b>
 <small>Кинематографичный образ</small>
 </button>
 
-<button class="trend" data-prompt="The person in the photo reacts with exaggerated surprise to an unexpected funny event, then laughs. Photorealistic live-action.">
+<button class="trend" data-description="Человек удивляется неожиданному событию, а затем смешно реагирует." data-prompt="The person in the photo reacts with exaggerated surprise to an unexpected funny event, then laughs. Photorealistic live-action.">
 <img src="https://images.unsplash.com/photo-1758272422057-d8e38d3f2181?auto=format&fit=crop&w=600" alt="Смешная реакция">
 <b>😂 Смешная реакция</b>
 <small>Неожиданный момент</small>
@@ -635,12 +633,12 @@ document.querySelectorAll('.trend').forEach((btn) => {
     });
 
     btn.classList.add('active');
-    promptBox.value = btn.dataset.prompt;
+    promptBox.value = btn.dataset.description || '';
   });
 });
 
 const firstTrend = document.querySelector('.trend.active');
-if (firstTrend) promptBox.value = firstTrend.dataset.prompt;
+if (firstTrend) promptBox.value = firstTrend.dataset.description || '';
 
 function showStatus(message, isError = false) {
   statusBox.style.display = 'block';
