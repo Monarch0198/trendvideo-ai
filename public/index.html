@@ -706,7 +706,7 @@ removeSecondPhoto.addEventListener('click', () => {
   secondPreview.src = '';
   secondPreview.style.display = 'none';
   removeSecondPhoto.style.display = 'none';
-
+secondCharacterUpload.style.display = 'block';
   if (secondPreview.dataset.url) {
     URL.revokeObjectURL(secondPreview.dataset.url);
     secondPreview.dataset.url = '';
@@ -758,6 +758,7 @@ secondPhoto.addEventListener('change', () => {
   secondPreview.dataset.url = url;
   secondPreview.src = url;
   secondPreview.style.display = 'block';
+  secondCharacterUpload.style.display = 'none';
   removeSecondPhoto.style.display = 'block';
 });
 
