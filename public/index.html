@@ -669,7 +669,7 @@ async function postFunction(name, payload) {
   let response;
 
   try {
-    response = await fetch(`/.netlify/functions/${name}`, {
+    response = await fetch(`/api/${name === 'start-generation' ? 'start-generation' : 'generation-status'}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
