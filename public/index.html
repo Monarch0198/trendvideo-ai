@@ -534,6 +534,25 @@ footer {
     ✖ Убрать второе фото
   </button>
 </section>
+<section class="card" id="royalCard" style="display:none">
+  <label class="label">👑 Второй человек для короля или королевы</label>
+
+  <label class="upload" for="royalPhoto" id="royalPhotoLabel">
+    <strong>＋ Выбрать фото второго человека</strong>
+    <small>JPG, PNG или WEBP · до 12 МБ</small>
+  </label>
+
+  <input id="royalPhoto" type="file"
+    accept="image/png,image/jpeg,image/webp" style="display:none">
+
+  <img id="royalPreview" alt="Фото второго человека"
+    style="display:none;max-width:100%;max-height:250px;margin:15px auto 0;border-radius:16px">
+
+  <button type="button" id="removeRoyalPhoto"
+    style="display:none;width:100%;margin-top:12px;padding:12px;border-radius:14px;background:#48243e;color:white;border:1px solid #fa55d4">
+    ✖ Убрать второе фото
+  </button>
+</section>
 <section class="card">
 <label class="label">2. Выбери идею</label>
 
@@ -871,6 +890,67 @@ removeRomancePhoto.addEventListener('click', () => {
 });
 
 updateRomanceVisibility();
+const royalCard = document.getElementById('royalCard');
+const royalPhoto = document.getElementById('royalPhoto');
+const royalPhotoLabel = document.getElementById('royalPhotoLabel');
+const royalPreview = document.getElementById('royalPreview');
+const removeRoyalPhoto = document.getElementById('removeRoyalPhoto');
+
+function updateRoyalVisibility() {
+  const activeTrend = document.querySelector('.trend.active');
+  const isRoyal = activeTrend &&
+    activeTrend.querySelector('b') &&
+    activeTrend.querySelector('b').textContent.includes('Король или королева');
+
+  royalCard.style.display = isRoyal ? 'block' : 'none';
+}
+
+document.querySelectorAll('.trend').forEach((btn) => {
+  btn.addEventListener('click', updateRoyalVisibility);
+});
+
+royalPhoto.addEventListener('change', () => {
+  const file = royalPhoto.files && royalPhoto.files[0];
+  if (!file) return;
+
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    alert('Выбери фото в формате JPG, PNG или WEBP.');
+    royalPhoto.value = '';
+    return;
+  }
+
+  if (file.size > 12 * 1024 * 1024) {
+    alert('Фото слишком большое. Выбери файл до 12 МБ.');
+    royalPhoto.value = '';
+    return;
+  }
+
+  if (royalPreview.dataset.url) {
+    URL.revokeObjectURL(royalPreview.dataset.url);
+  }
+
+  const url = URL.createObjectURL(file);
+  royalPreview.dataset.url = url;
+  royalPreview.src = url;
+  royalPreview.style.display = 'block';
+  royalPhotoLabel.style.display = 'none';
+  removeRoyalPhoto.style.display = 'block';
+});
+
+removeRoyalPhoto.addEventListener('click', () => {
+  royalPhoto.value = '';
+  royalPreview.src = '';
+  royalPreview.style.display = 'none';
+  removeRoyalPhoto.style.display = 'none';
+  royalPhotoLabel.style.display = 'flex';
+
+  if (royalPreview.dataset.url) {
+    URL.revokeObjectURL(royalPreview.dataset.url);
+    royalPreview.dataset.url = '';
+  }
+});
+
+updateRoyalVisibility();
 function showStatus(message, isError = false) {
   statusBox.style.display = 'block';
   statusBox.style.borderColor = isError ? '#8a4545' : '#65533b';
