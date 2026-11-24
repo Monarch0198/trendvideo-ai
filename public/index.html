@@ -483,6 +483,44 @@ footer {
 <img id="preview" alt="Предпросмотр загруженной фотографии"> <button type="button" id="removePhoto" style="display:none;width:100%;margin-top:12px;padding:12px;border-radius:14px;background:#48243e;color:white;border:1px solid #fa55d4">
   ✖ Убрать фотографию
 </button>
+</section> 
+<section class="card" id="secondCharacterCard" style="display:none">
+  <label class="label">Наши персонажи</label>
+
+  <div class="row">
+    <div style="text-align:center">
+      <img src="rumpel-reference(1).png" alt="Наш Румпель"
+        style="width:100%;max-width:180px;border-radius:16px">
+      <b>Румпель</b>
+    </div>
+
+    <div style="text-align:center">
+      <img src="girl-reference(1).png" alt="Наша девушка"
+        style="width:100%;max-width:180px;border-radius:16px">
+      <b>Девушка</b>
+    </div>
+  </div>
+
+  <button type="button" id="changeSecondCharacter" class="upload"
+    style="width:100%;margin-top:15px">
+    <strong>＋ Поменять девушку</strong>
+    <small>Можно загрузить своё фото</small>
+  </button>
+
+  <div id="secondCharacterUpload" style="display:none;margin-top:15px">
+    <label class="upload" for="secondPhoto" id="secondPhotoUploadLabel">
+      <strong>Выбрать фотографию девушки</strong>
+      <small>JPG, PNG или WEBP</small>
+    </label>
+    <input id="secondPhoto" type="file"
+      accept="image/png,image/jpeg,image/webp" style="display:none">
+    <img id="secondPreview" alt="Фото девушки"
+      style="display:none;max-width:100%;max-height:250px;margin:15px auto 0;border-radius:16px">
+    <button type="button" id="removeSecondPhoto"
+  style="display:none;width:100%;margin-top:12px;padding:12px;border-radius:14px;background:#48243e;color:white;border:1px solid #fa55d4">
+  ✖ Убрать фотографию девушки
+    </button>
+  </div>
 </section>
 <section class="card">
 <label class="label">2. Выбери идею</label>
@@ -535,44 +573,7 @@ footer {
 </button>
 
 </div>
-  <section class="card" id="secondCharacterCard" style="display:none">
-  <label class="label">Наши персонажи</label>
-
-  <div class="row">
-    <div style="text-align:center">
-      <img src="rumpel-reference(1).png" alt="Наш Румпель"
-        style="width:100%;max-width:180px;border-radius:16px">
-      <b>Румпель</b>
-    </div>
-
-    <div style="text-align:center">
-      <img src="girl-reference(1).png" alt="Наша девушка"
-        style="width:100%;max-width:180px;border-radius:16px">
-      <b>Девушка</b>
-    </div>
-  </div>
-
-  <button type="button" id="changeSecondCharacter" class="upload"
-    style="width:100%;margin-top:15px">
-    <strong>＋ Поменять девушку</strong>
-    <small>Можно загрузить своё фото</small>
-  </button>
-
-  <div id="secondCharacterUpload" style="display:none;margin-top:15px">
-    <label class="upload" for="secondPhoto" id="secondPhotoUploadLabel">
-      <strong>Выбрать фотографию девушки</strong>
-      <small>JPG, PNG или WEBP</small>
-    </label>
-    <input id="secondPhoto" type="file"
-      accept="image/png,image/jpeg,image/webp" style="display:none">
-    <img id="secondPreview" alt="Фото девушки"
-      style="display:none;max-width:100%;max-height:250px;margin:15px auto 0;border-radius:16px">
-    <button type="button" id="removeSecondPhoto"
-  style="display:none;width:100%;margin-top:12px;padding:12px;border-radius:14px;background:#48243e;color:white;border:1px solid #fa55d4">
-  ✖ Убрать фотографию девушки
-    </button>
-  </div>
-  </section>
+  
 </section>
 
 
