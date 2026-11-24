@@ -554,6 +554,49 @@ footer {
   </button>
 </section>
 <section class="card">
+  <label class="label">✨ Создать своё видео</label>
+  <p class="note">Загрузи одну или две фотографии и опиши свою идею.</p>
+
+  <label class="upload" for="customPhoto1">
+    <strong>＋ Добавить первое фото</strong>
+    <small>Обязательное фото</small>
+  </label>
+  <input id="customPhoto1" type="file" accept="image/png,image/jpeg,image/webp">
+
+  <label class="upload" for="customPhoto2" style="margin-top:12px">
+    <strong>＋ Добавить второе фото</strong>
+    <small>Необязательно</small>
+  </label>
+  <input id="customPhoto2" type="file" accept="image/png,image/jpeg,image/webp">
+
+  <textarea id="customDescription" placeholder="Опиши, какое видео хочешь создать..."></textarea>
+
+  <p class="note">Создание видео пока находится в разработке.</p>
+</section>
+
+<section class="card">
+  <label class="label">📸 Оживи фото</label>
+  <p class="note">Добавь фотографию и выбери, какое движение хочешь увидеть.</p>
+
+  <label class="upload" for="animatePhoto">
+    <strong>＋ Загрузить фотографию</strong>
+    <small>JPG, PNG или WEBP</small>
+  </label>
+  <input id="animatePhoto" type="file" accept="image/png,image/jpeg,image/webp">
+
+  <label class="label" for="animationType" style="margin-top:18px">
+    Как оживить фотографию?
+  </label>
+  <select id="animationType">
+    <option value="smile">Улыбка</option>
+    <option value="blink">Моргание и движение глаз</option>
+    <option value="turn">Поворот головы</option>
+    <option value="hair">Ветер в волосах</option>
+    <option value="camera">Движение камеры</option>
+  </select>
+
+  <p class="note">Функция пока находится в разработке.</p>
+</section>
 <label class="label">2. Выбери идею</label>
 
 <div class="grid" id="trends">
