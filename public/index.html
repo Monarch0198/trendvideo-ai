@@ -603,7 +603,7 @@ footer {
 <button class="trend active" data-description="Румпель неожиданно выглядывает из-за стога сена, вылезает и начинает смешно танцевать." data-prompt="The viral Rumpelstiltskin character suddenly peeks out from behind a large haystack, looks at the camera with a mischievous expression, then climbs out and performs his iconic funny tiptoe dance. Keep the character recognizable, with curly light hair, a dark sparkling suit and bow tie. Photorealistic live-action, natural movements.">
 <img src="a_full_body_portrait_style_high_resolution_cine.png"
 alt="Наш Румпель в полный рост"
-style="width:100%;height:150px;object-fit:contain;object-position:center;border-radius:16px;display:block;background:#111"
+style="width:100%;height:150px;object-fit:contain;object-position:center;border-radius:16px;display:block;background:#111">
 <b>🌾 Сюрприз из сена</b>
 <small>Неожиданное появление и танец</small>
 </button>
@@ -717,7 +717,64 @@ const qualityBox = document.getElementById('quality');
 let selectedFile = null;
 let busy = false;
 let previewUrl = null;
+function setupLocalPhotoPreview(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
 
+  const previewBox = document.createElement('div');
+  previewBox.style.cssText = 'display:none;margin-top:12px;padding:10px;background:#222;border-radius:12px;';
+
+  const img = document.createElement('img');
+  img.style.cssText = 'width:100%;max-height:220px;object-fit:contain;border-radius:10px;display:block;';
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = 'Удалить фото';
+  removeBtn.style.cssText = 'margin-top:10px;padding:10px 16px;border:0;border-radius:8px;background:#444;color:white;';
+
+  previewBox.append(img, removeBtn);
+  input.after(previewBox);
+  input.style.display = 'none';
+
+  let objectUrl = null;
+
+  input.addEventListener('change', () => {
+    const file = input.files[0];
+    if (!file) return;
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      alert('Загрузи фото в формате JPG, PNG или WEBP.');
+      input.value = '';
+      return;
+    }
+
+    if (file.size > 12 * 1024 * 1024) {
+      alert('Размер фотографии не должен превышать 12 МБ.');
+      input.value = '';
+      return;
+    }
+
+    if (objectUrl) URL.revokeObjectURL(objectUrl);
+    objectUrl = URL.createObjectURL(file);
+    img.src = objectUrl;
+    previewBox.style.display = 'block';
+  });
+
+  removeBtn.addEventListener('click', () => {
+    input.value = '';
+    img.removeAttribute('src');
+    previewBox.style.display = 'none';
+
+    if (objectUrl) {
+      URL.revokeObjectURL(objectUrl);
+      objectUrl = null;
+    }
+  });
+}
+
+setupLocalPhotoPreview('customPhoto1');
+setupLocalPhotoPreview('customPhoto2');
+setupLocalPhotoPreview('animatePhoto');
 function estimatePrice() {
   const seconds = Number(durationBox.value);
   const quality = qualityBox.value;
