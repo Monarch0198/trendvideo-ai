@@ -515,6 +515,25 @@ footer {
     </button>
   </div>
 </section>
+<section class="card" id="romanceCard" style="display:none">
+  <label class="label">❤️ Второй человек для романтики</label>
+
+  <label class="upload" for="romancePhoto" id="romancePhotoLabel">
+    <strong>＋ Выбрать фото второго человека</strong>
+    <small>JPG, PNG или WEBP · до 12 МБ</small>
+  </label>
+
+  <input id="romancePhoto" type="file"
+    accept="image/png,image/jpeg,image/webp" style="display:none">
+
+  <img id="romancePreview" alt="Фото второго человека"
+    style="display:none;max-width:100%;max-height:250px;margin:15px auto 0;border-radius:16px">
+
+  <button type="button" id="removeRomancePhoto"
+    style="display:none;width:100%;margin-top:12px;padding:12px;border-radius:14px;background:#48243e;color:white;border:1px solid #fa55d4">
+    ✖ Убрать второе фото
+  </button>
+</section>
 <section class="card">
 <label class="label">2. Выбери идею</label>
 
@@ -789,6 +808,67 @@ secondPhoto.addEventListener('change', () => {
 });
 
 updateSecondCharacterVisibility();
+const romanceCard = document.getElementById('romanceCard');
+const romancePhoto = document.getElementById('romancePhoto');
+const romancePhotoLabel = document.getElementById('romancePhotoLabel');
+const romancePreview = document.getElementById('romancePreview');
+const removeRomancePhoto = document.getElementById('removeRomancePhoto');
+
+function updateRomanceVisibility() {
+  const activeTrend = document.querySelector('.trend.active');
+  const isRomance = activeTrend &&
+    activeTrend.querySelector('b') &&
+    activeTrend.querySelector('b').textContent.includes('Романтика');
+
+  romanceCard.style.display = isRomance ? 'block' : 'none';
+}
+
+document.querySelectorAll('.trend').forEach((btn) => {
+  btn.addEventListener('click', updateRomanceVisibility);
+});
+
+romancePhoto.addEventListener('change', () => {
+  const file = romancePhoto.files && romancePhoto.files[0];
+  if (!file) return;
+
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    alert('Выбери фото в формате JPG, PNG или WEBP.');
+    romancePhoto.value = '';
+    return;
+  }
+
+  if (file.size > 12 * 1024 * 1024) {
+    alert('Фото слишком большое. Выбери файл до 12 МБ.');
+    romancePhoto.value = '';
+    return;
+  }
+
+  if (romancePreview.dataset.url) {
+    URL.revokeObjectURL(romancePreview.dataset.url);
+  }
+
+  const url = URL.createObjectURL(file);
+  romancePreview.dataset.url = url;
+  romancePreview.src = url;
+  romancePreview.style.display = 'block';
+  romancePhotoLabel.style.display = 'none';
+  removeRomancePhoto.style.display = 'block';
+});
+
+removeRomancePhoto.addEventListener('click', () => {
+  romancePhoto.value = '';
+  romancePreview.src = '';
+  romancePreview.style.display = 'none';
+  removeRomancePhoto.style.display = 'none';
+  romancePhotoLabel.style.display = 'flex';
+
+  if (romancePreview.dataset.url) {
+    URL.revokeObjectURL(romancePreview.dataset.url);
+    romancePreview.dataset.url = '';
+  }
+});
+
+updateRomanceVisibility();
 function showStatus(message, isError = false) {
   statusBox.style.display = 'block';
   statusBox.style.borderColor = isError ? '#8a4545' : '#65533b';
