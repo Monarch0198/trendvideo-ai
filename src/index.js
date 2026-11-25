@@ -145,7 +145,103 @@ if (origin !== "https://trendvideo-ai.trendvideo-ai.workers.dev") {
     }, 500);
   }
 }
+async function sendSupportMessage(request, env) {
+  if (request.method !== "POST") {
+    return json({ error: "Метод не поддерживается." }, 405);
+  }
 
+  if (
+    request.headers.get("Origin") !==
+    "https://trendvideo-ai.trendvideo-ai.workers.dev"
+  ) {
+    return json({ error: "Запрос с этого сайта запрещён." }, 403);
+  }
+
+  if (!env.RESEND_API_KEY) {
+    return json({ error: "Отправка писем не настроена." }, 503);
+  }
+
+  let body;
+
+  try {
+    body = await request.json();
+  } catch {
+    return json({ error: "Некорректный запрос." }, 400);
+  }
+
+  const name = typeof body.name === "string" ? body.name.trim() : "";
+  const email = typeof body.email === "string"
+    ? body.email.trim()
+    : "";
+  const order = typeof body.order === "string"
+    ? body.order.trim()
+    : "";
+  const message = typeof body.message === "string"
+    ? body.message.trim()
+    : "";
+
+  if (!name || name.length > 80) {
+    return json({ error: "Проверьте имя." }, 400);
+  }
+
+  if (
+    email.length > 254 ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  ) {
+    return json({ error: "Укажите корректную почту." }, 400);
+  }
+
+  if (order.length > 100) {
+    return json({ error: "Номер заказа слишком длинный." }, 400);
+  }
+
+  if (!message || message.length > 3000) {
+    return json({ error: "Проверьте текст сообщения." }, 400);
+  }
+
+  const text = [
+    "Новое обращение в поддержку TrendVideo AI",
+    "",
+    `Имя: ${name}`,
+    `Почта для ответа: ${email}`,
+    `Номер заказа: ${order || "Не указан"}`,
+    "",
+    "Сообщение:",
+    message
+  ].join("\n");
+
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        from: "TrendVideo AI <onboarding@resend.dev>",
+        to: ["trendvideo.support@gmail.com"],
+        reply_to: email,
+        subject: "Новое обращение в поддержку",
+        text
+      })
+    });
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      return json({
+        error: "Не удалось отправить письмо. Попробуйте позже."
+      }, 502);
+    }
+
+    return json({ ok: true });
+
+  } catch {
+    return json({
+      error: "Ошибка отправки письма."
+    }, 502);
+  }
+}
 async function moderateContent(env, prompt, imageData) {
   const response = await fetch(
     "https://api.openai.com/v1/moderations",
@@ -386,7 +482,9 @@ if (url.pathname === "/api/health") {
     }, 503);
   }
 }
-
+if (url.pathname === "/api/support") {
+  return sendSupportMessage(request, env);
+}
     if (url.pathname === "/api/create-order") {
       return createOrder(request, env);
     }
