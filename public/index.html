@@ -1454,6 +1454,68 @@ if (!consent) return;
     generate.disabled = !selectedFile;
   }
 });
+  const supportForm = document.getElementById('supportForm');
+const supportSubmit = document.getElementById('supportSubmit');
+const supportStatus = document.getElementById('supportStatus');
+
+supportForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  supportSubmit.disabled = true;
+  supportSubmit.textContent = 'Отправляем сообщение...';
+
+  supportStatus.style.display = 'block';
+  supportStatus.style.borderColor = '#65533b';
+  supportStatus.style.background = '#30291e';
+  supportStatus.style.color = '#ffe4b2';
+  supportStatus.textContent = 'Отправляем твоё обращение...';
+
+  const formData = new FormData(supportForm);
+
+  const payload = {
+    name: formData.get('name').trim(),
+    email: formData.get('email').trim(),
+    order: formData.get('order').trim(),
+    message: formData.get('message').trim()
+  };
+
+  try {
+    const response = await fetch('/api/support', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || !data.ok) {
+      throw new Error(
+        data.error || 'Не удалось отправить сообщение. Попробуй позже.'
+      );
+    }
+
+    supportStatus.style.borderColor = '#397a52';
+    supportStatus.style.background = '#183426';
+    supportStatus.style.color = '#c8ffda';
+    supportStatus.textContent =
+      'Сообщение отправлено! Мы ответим на указанную почту.';
+
+    supportForm.reset();
+
+  } catch (error) {
+    supportStatus.style.borderColor = '#8a4545';
+    supportStatus.style.background = '#351f25';
+    supportStatus.style.color = '#ffd1d1';
+    supportStatus.textContent =
+      error.message || 'Ошибка отправки. Попробуй ещё раз.';
+
+  } finally {
+    supportSubmit.disabled = false;
+    supportSubmit.textContent = 'Отправить сообщение ✉️';
+  }
+});
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
