@@ -33,11 +33,12 @@ function errorMessage(data) {
 }
 
 async function createOrder(request, env) {
-    const origin = request.headers.get("Origin");
+  const origin = request.headers.get("Origin");
 
-if (origin !== "https://trendvideo-ai.trendvideo-ai.workers.dev") {
-  return json({ error: "Запрос с этого сайта запрещён." }, 403);
-}
+  if (origin !== "https://trendvideo-ai.trendvideo-ai.workers.dev") {
+    return json({ error: "Запрос с этого сайта запрещён." }, 403);
+  }
+
   if (request.method !== "POST") {
     return json({ error: "Метод не поддерживается." }, 405);
   }
@@ -54,10 +55,9 @@ if (origin !== "https://trendvideo-ai.trendvideo-ai.workers.dev") {
     return json({ error: "Некорректный JSON." }, 400);
   }
 
-  const email =
-    typeof body.email === "string"
-      ? body.email.trim().toLowerCase()
-      : "";
+  const email = typeof body.email === "string"
+    ? body.email.trim().toLowerCase()
+    : "";
 
   if (
     email.length > 254 ||
@@ -88,10 +88,9 @@ if (origin !== "https://trendvideo-ai.trendvideo-ai.workers.dev") {
     return json({ error: "Не удалось рассчитать стоимость." }, 400);
   }
 
-  const prompt =
-    typeof body.prompt === "string"
-      ? body.prompt.trim()
-      : "";
+  const prompt = typeof body.prompt === "string"
+    ? body.prompt.trim()
+    : "";
 
   if (prompt.length > 5000) {
     return json({ error: "Описание слишком длинное." }, 400);
@@ -99,6 +98,17 @@ if (origin !== "https://trendvideo-ai.trendvideo-ai.workers.dev") {
 
   const orderId = crypto.randomUUID();
   const userId = crypto.randomUUID();
+  const accessToken = crypto.randomUUID() + crypto.randomUUID();
+
+  const tokenHashBuffer = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(accessToken)
+  );
+
+  const tokenHash = Array.from(new Uint8Array(tokenHashBuffer))
+    .map(byte => byte.toString(16).padStart(2, "0"))
+    .join("");
+
   const amountKopecks = priceRubles * 100;
 
   try {
@@ -129,11 +139,26 @@ if (origin !== "https://trendvideo-ai.trendvideo-ai.workers.dev") {
         duration,
         resolution,
         prompt
+      ),
+
+      env.DB.prepare(`
+        INSERT INTO order_access_tokens (
+          id,
+          order_id,
+          token_hash,
+          expires_at
+        )
+        VALUES (?, ?, ?, unixepoch() + 2592000)
+      `).bind(
+        crypto.randomUUID(),
+        orderId,
+        tokenHash
       )
     ]);
 
     return json({
       orderId,
+      accessToken,
       amountKopecks,
       amountRubles: priceRubles,
       status: "created"
@@ -143,6 +168,60 @@ if (origin !== "https://trendvideo-ai.trendvideo-ai.workers.dev") {
     return json({
       error: "Не удалось создать заказ. Попробуйте позже."
     }, 500);
+  }
+}
+
+async function getOrder(request, env) {
+  if (request.method !== "GET") {
+    return json({ error: "Метод не поддерживается." }, 405);
+  }
+
+  const url = new URL(request.url);
+  const orderId = url.searchParams.get("id");
+  const token = url.searchParams.get("token");
+
+  if (!orderId || !token || token.length > 200) {
+    return json({ error: "Ссылка на заказ недействительна." }, 400);
+  }
+
+  try {
+    const tokenHash = await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode(token)
+    );
+
+    const hash = Array.from(new Uint8Array(tokenHash))
+      .map(byte => byte.toString(16).padStart(2, "0"))
+      .join("");
+
+    const access = await env.DB.prepare(`
+      SELECT id
+      FROM order_access_tokens
+      WHERE order_id = ?
+        AND token_hash = ?
+        AND expires_at > unixepoch()
+      LIMIT 1
+    `).bind(orderId, hash).first();
+
+    if (!access) {
+      return json({ error: "Ссылка недействительна или истекла." }, 403);
+    }
+
+    const order = await env.DB.prepare(`
+      SELECT id, amount_kopecks, status, video_mode,
+             duration, resolution, created_at, updated_at
+      FROM orders
+      WHERE id = ?
+      LIMIT 1
+    `).bind(orderId).first();
+
+    if (!order) {
+      return json({ error: "Заказ не найден." }, 404);
+    }
+
+    return json({ order });
+  } catch {
+    return json({ error: "Не удалось загрузить заказ." }, 500);
   }
 }
 async function sendSupportMessage(request, env) {
@@ -485,7 +564,9 @@ if (url.pathname === "/api/health") {
 if (url.pathname === "/api/support") {
   return sendSupportMessage(request, env);
 }
-    if (url.pathname === "/api/create-order") {
+  if (url.pathname === "/api/order") {
+  return getOrder(request, env);
+  }  if (url.pathname === "/api/create-order") {
       return createOrder(request, env);
     }
 
