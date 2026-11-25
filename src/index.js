@@ -31,10 +31,8 @@ function json(data, status = 200) {
 function errorMessage(data) {
   return data?.detail || data?.message || data?.error || "Ошибка fal.ai";
 }
-
 async function createOrder(request, env) {
   const origin = request.headers.get("Origin");
-
   if (origin !== "https://trendvideo-ai.trendvideo-ai.workers.dev") {
     return json({ error: "Запрос с этого сайта запрещён." }, 403);
   }
