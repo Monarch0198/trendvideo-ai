@@ -452,7 +452,29 @@ footer {
     font-size: 17px;
   }
 }
+details[name="videoMode"] {
+  min-width: 0;
+}
 
+details[name="videoMode"] > summary {
+  list-style: none;
+  min-height: 42px;
+  padding: 9px 4px !important;
+  border-radius: 12px !important;
+  font-size: 13px !important;
+  background: rgba(255,255,255,.05);
+  transition: .2s;
+}
+
+details[name="videoMode"] > summary::-webkit-details-marker {
+  display: none;
+}
+
+details[name="videoMode"][open] > summary {
+  border-color: var(--pink) !important;
+  background: rgba(250,85,212,.15);
+  box-shadow: 0 0 15px rgba(250,85,212,.15);
+}
 </style>
 </head>
 <body>
@@ -553,49 +575,66 @@ footer {
     ✖ Убрать второе фото
   </button>
 </section>
-<section class="card">
-  <label class="label">✨ Создать своё видео</label>
-  <p class="note">Загрузи одну или две фотографии и опиши свою идею.</p>
-
-  <label class="upload" for="customPhoto1">
-    <strong>＋ Добавить первое фото</strong>
-    <small>Обязательное фото</small>
-  </label>
-  <input id="customPhoto1" type="file" accept="image/png,image/jpeg,image/webp">
-
-  <label class="upload" for="customPhoto2" style="margin-top:12px">
-    <strong>＋ Добавить второе фото</strong>
-    <small>Необязательно</small>
-  </label>
-  <input id="customPhoto2" type="file" accept="image/png,image/jpeg,image/webp">
-
-  <textarea id="customDescription" placeholder="Опиши, какое видео хочешь создать..."></textarea>
-
-  <p class="note">Создание видео пока находится в разработке.</p>
-</section>
 
 <section class="card">
-  <label class="label">📸 Оживи фото</label>
-  <p class="note">Добавь фотографию и выбери, какое движение хочешь увидеть.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
 
-  <label class="upload" for="animatePhoto">
-    <strong>＋ Загрузить фотографию</strong>
-    <small>JPG, PNG или WEBP</small>
-  </label>
-  <input id="animatePhoto" type="file" accept="image/png,image/jpeg,image/webp">
+    <details name="videoMode">
+      <summary style="border:1px solid #888;border-radius:10px;padding:12px 5px;text-align:center;font-weight:600;font-size:14px;cursor:pointer">
+        ✨ Своя идея
+      </summary>
 
-  <label class="label" for="animationType" style="margin-top:18px">
-    Как оживить фотографию?
-  </label>
-  <select id="animationType">
-    <option value="smile">Улыбка</option>
-    <option value="blink">Моргание и движение глаз</option>
-    <option value="turn">Поворот головы</option>
-    <option value="hair">Ветер в волосах</option>
-    <option value="camera">Движение камеры</option>
-  </select>
+      <div style="padding-top:14px">
+        <p class="note">Загрузи одно или два фото и опиши свой сюжет.</p>
 
-  <p class="note">Функция пока находится в разработке.</p>
+        <label class="upload" for="customPhoto1">
+          <strong>＋ Добавить первое фото</strong>
+          <small>Обязательное фото</small>
+        </label>
+        <input id="customPhoto1" type="file" accept="image/png,image/jpeg,image/webp">
+
+        <label class="upload" for="customPhoto2" style="margin-top:12px">
+          <strong>＋ Добавить второе фото</strong>
+          <small>Необязательно</small>
+        </label>
+        <input id="customPhoto2" type="file" accept="image/png,image/jpeg,image/webp">
+
+        <textarea id="customDescription" placeholder="Напиши, что должно происходить в видео..."></textarea>
+
+        <p class="note">Создание видео пока находится в разработке.</p>
+      </div>
+    </details>
+
+    <details name="videoMode">
+      <summary style="border:1px solid #888;border-radius:10px;padding:12px 5px;text-align:center;font-weight:600;font-size:14px;cursor:pointer">
+        📸 Оживить фото
+      </summary>
+
+      <div style="padding-top:14px">
+        <p class="note">Загрузи фотографию и выбери эффект.</p>
+
+        <label class="upload" for="animatePhoto">
+          <strong>＋ Загрузить фотографию</strong>
+          <small>JPG, PNG или WEBP</small>
+        </label>
+        <input id="animatePhoto" type="file" accept="image/png,image/jpeg,image/webp">
+
+        <label class="label" for="animationType" style="margin-top:18px">
+          Как оживить фотографию?
+        </label>
+        <select id="animationType">
+          <option value="smile">Улыбка</option>
+          <option value="blink">Моргание и движение глаз</option>
+          <option value="turn">Поворот головы</option>
+          <option value="hair">Ветер в волосах</option>
+          <option value="camera">Движение камеры</option>
+        </select>
+
+        <p class="note">Функция пока находится в разработке.</p>
+      </div>
+    </details>
+
+  </div>
 </section>
 <section class="card">
   <label class="label">2. Выбери идею</label>
