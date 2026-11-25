@@ -912,6 +912,7 @@ function estimatePrice() {
 }
 durationBox.addEventListener('change', estimatePrice);
 qualityBox.addEventListener('change', estimatePrice);
+qualityBox.addEventListener('input', estimatePrice);
 estimatePrice();
 
 photo.addEventListener('change', () => {
