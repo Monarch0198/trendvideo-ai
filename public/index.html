@@ -888,8 +888,25 @@ const durationBox = document.getElementById('duration');
 const qualityBox = document.getElementById('quality');
 
 let selectedFile = null;
+let activeMode = 'standard';
 let busy = false;
 let previewUrl = null;
+function updateGenerateButton() {
+  let ready = false;
+
+  if (activeMode === 'standard') {
+    ready = Boolean(selectedFile);
+  } else if (activeMode === 'custom') {
+    const firstPhoto = document.getElementById('customPhoto1');
+    const description = document.getElementById('customDescription');
+    ready = Boolean(firstPhoto.files && firstPhoto.files[0] && description.value.trim());
+  } else if (activeMode === 'animate') {
+    const animatePhoto = document.getElementById('animatePhoto');
+    ready = Boolean(animatePhoto.files && animatePhoto.files[0]);
+  }
+
+  generate.disabled = !ready || busy;
+}
 function setupLocalPhotoPreview(inputId) {
   const input = document.getElementById(inputId);
   if (!input) return;
@@ -931,13 +948,14 @@ function setupLocalPhotoPreview(inputId) {
     objectUrl = URL.createObjectURL(file);
     img.src = objectUrl;
     previewBox.style.display = 'block';
+    updateGenerateButton();
   });
 
   removeBtn.addEventListener('click', () => {
     input.value = '';
     img.removeAttribute('src');
     previewBox.style.display = 'none';
-
+updateGenerateButton();
     if (objectUrl) {
       URL.revokeObjectURL(objectUrl);
       objectUrl = null;
@@ -952,13 +970,14 @@ const customIdeaBtn = document.getElementById('customIdeaBtn');
 const animatePhotoBtn = document.getElementById('animatePhotoBtn');
 const customIdeaPanel = document.getElementById('customIdeaPanel');
 const animatePhotoPanel = document.getElementById('animatePhotoPanel');
-
 customIdeaBtn.addEventListener('click', () => {
   const opening = customIdeaPanel.hidden;
   customIdeaPanel.hidden = !opening;
   animatePhotoPanel.hidden = true;
   customIdeaBtn.classList.toggle('active', opening);
   animatePhotoBtn.classList.remove('active');
+  activeMode = opening ? 'custom' : 'standard';
+  updateGenerateButton();
   estimatePrice();
 });
 
@@ -968,6 +987,8 @@ animatePhotoBtn.addEventListener('click', () => {
   customIdeaPanel.hidden = true;
   animatePhotoBtn.classList.toggle('active', opening);
   customIdeaBtn.classList.remove('active');
+  activeMode = opening ? 'animate' : 'standard';
+  updateGenerateButton();
   estimatePrice();
 });
 function estimatePrice() {
