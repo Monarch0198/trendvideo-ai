@@ -585,23 +585,42 @@ details[name="videoMode"][open] > summary {
       </summary>
 
       <div style="padding-top:14px">
-        <p class="note">Загрузи одно или два фото и опиши свой сюжет.</p>
+  <p class="note">Добавь фотографии для своего сюжета.</p>
 
-        <label class="upload" for="customPhoto1">
-          <strong>＋ Добавить первое фото</strong>
-          <small>Обязательное фото</small>
-        </label>
-        <input id="customPhoto1" type="file" accept="image/png,image/jpeg,image/webp">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
 
-        <label class="upload" for="customPhoto2" style="margin-top:12px">
-          <strong>＋ Добавить второе фото</strong>
-          <small>Необязательно</small>
-        </label>
-        <input id="customPhoto2" type="file" accept="image/png,image/jpeg,image/webp">
+    <div>
+      <label class="upload" for="customPhoto1"
+        style="min-height:125px;padding:10px;border-radius:16px">
+        <strong>＋ Первое фото</strong>
+        <small>Обязательно</small>
+      </label>
+      <input id="customPhoto1" type="file"
+        accept="image/png,image/jpeg,image/webp">
+    </div>
 
-        <textarea id="customDescription" placeholder="Напиши, что должно происходить в видео..."></textarea>
+    <div>
+      <label class="upload" for="customPhoto2"
+        style="min-height:125px;padding:10px;border-radius:16px">
+        <strong>＋ Второе фото</strong>
+        <small>Необязательно</small>
+      </label>
+      <input id="customPhoto2" type="file"
+        accept="image/png,image/jpeg,image/webp">
+    </div>
 
-        <p class="note">Создание видео пока находится в разработке.</p>
+  </div>
+
+  <label class="label" for="customDescription"
+    style="font-size:15px;margin-top:16px">
+    Что должно происходить в видео?
+  </label>
+
+  <textarea id="customDescription"
+    style="min-height:85px"
+    placeholder="Например: парень и девушка гуляют по воздуху, а затем вместе взлетают..."></textarea>
+
+  <p class="note">Создание видео пока находится в разработке.</p>
       </div>
     </details>
 
