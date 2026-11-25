@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#10111a">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Мой заказ — TrendVideo AI</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px 16px;
+      background: #10111a;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    .card {
+      width: 100%;
+      max-width: 480px;
+      margin: 40px auto;
+      padding: 24px;
+      border: 1px solid #303247;
+      border-radius: 18px;
+      background: #191b29;
+    }
+    h1 { margin-top: 0; font-size: 26px; }
+    .muted { color: #a7a9bb; line-height: 1.5; }
+    .status {
+      margin: 22px 0;
+      padding: 16px;
+      border-radius: 12px;
+      background: #25283b;
+      line-height: 1.5;
+    }
+    .number {
+      overflow-wrap: anywhere;
+      color: #b7a5ff;
+      font-weight: bold;
+    }
+    a { color: #b7a5ff; }
+    .back {
+      display: inline-block;
+      margin-top: 20px;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Ваш заказ</h1>
+    <p class="muted">Здесь будет отображаться информация о создании вашего AI-видео.</p>
+
+    <div class="status" id="status">
+      <strong>Тестовый режим</strong><br>
+      Страница заказа подготовлена. Создание видео и оплата пока не подключены.
+    </div>
+
+    <p>Номер заказа:</p>
+    <div class="number" id="orderNumber">Пока не создан</div>
+
+    <a class="back" href="/">← Вернуться на главную</a>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const orderId = params.get("id");
+
+    if (orderId) {
+      document.getElementById("orderNumber").textContent = orderId;
+    }
+  </script>
+</body>
+</html>
