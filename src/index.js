@@ -1,8 +1,25 @@
-
 const MODEL_ID = "fal-ai/vidu/q4/image-to-video";
 const MAX_IMAGE_DATA_LENGTH = 5000000;
 const ALLOWED_DURATIONS = new Set([5, 8, 10]);
 const ALLOWED_RESOLUTIONS = new Set(["540p", "720p"]);
+
+const PRICES = {
+  standard: {
+    "5-540p": 189, "5-720p": 209,
+    "8-540p": 209, "8-720p": 239,
+    "10-540p": 239, "10-720p": 259
+  },
+  custom: {
+    "5-540p": 189, "5-720p": 209,
+    "8-540p": 209, "8-720p": 239,
+    "10-540p": 239, "10-720p": 259
+  },
+  animate: {
+    "5-540p": 49, "5-720p": 69,
+    "8-540p": 79, "8-720p": 89,
+    "10-540p": 89, "10-720p": 109
+  }
+};
 
 function json(data, status = 200) {
   return Response.json(data, {
@@ -14,29 +31,142 @@ function json(data, status = 200) {
 function errorMessage(data) {
   return data?.detail || data?.message || data?.error || "Ошибка fal.ai";
 }
+
+async function createOrder(request, env) {
+    const origin = request.headers.get("Origin");
+
+if (origin !== "https://trendvideo-ai.trendvideo-ai.workers.dev") {
+  return json({ error: "Запрос с этого сайта запрещён." }, 403);
+}
+  if (request.method !== "POST") {
+    return json({ error: "Метод не поддерживается." }, 405);
+  }
+
+  if (!env.DB) {
+    return json({ error: "База данных не подключена." }, 503);
+  }
+
+  let body;
+
+  try {
+    body = await request.json();
+  } catch {
+    return json({ error: "Некорректный JSON." }, 400);
+  }
+
+  const email =
+    typeof body.email === "string"
+      ? body.email.trim().toLowerCase()
+      : "";
+
+  if (
+    email.length > 254 ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  ) {
+    return json({ error: "Укажите корректный email." }, 400);
+  }
+
+  const mode = body.mode;
+  const duration = Number(body.duration);
+  const resolution = body.resolution;
+
+  if (!Object.hasOwn(PRICES, mode)) {
+    return json({ error: "Неизвестный режим видео." }, 400);
+  }
+
+  if (!ALLOWED_DURATIONS.has(duration)) {
+    return json({ error: "Недопустимая длительность." }, 400);
+  }
+
+  if (!ALLOWED_RESOLUTIONS.has(resolution)) {
+    return json({ error: "Недопустимое качество." }, 400);
+  }
+
+  const priceRubles = PRICES[mode][`${duration}-${resolution}`];
+
+  if (!priceRubles) {
+    return json({ error: "Не удалось рассчитать стоимость." }, 400);
+  }
+
+  const prompt =
+    typeof body.prompt === "string"
+      ? body.prompt.trim()
+      : "";
+
+  if (prompt.length > 5000) {
+    return json({ error: "Описание слишком длинное." }, 400);
+  }
+
+  const orderId = crypto.randomUUID();
+  const userId = crypto.randomUUID();
+  const amountKopecks = priceRubles * 100;
+
+  try {
+    await env.DB.batch([
+      env.DB.prepare(
+        "INSERT INTO users (id) VALUES (?)"
+      ).bind(userId),
+
+      env.DB.prepare(`
+        INSERT INTO orders (
+          id,
+          user_id,
+          amount_kopecks,
+          status,
+          email,
+          video_mode,
+          duration,
+          resolution,
+          prompt
+        )
+        VALUES (?, ?, ?, 'created', ?, ?, ?, ?, ?)
+      `).bind(
+        orderId,
+        userId,
+        amountKopecks,
+        email,
+        mode,
+        duration,
+        resolution,
+        prompt
+      )
+    ]);
+
+    return json({
+      orderId,
+      amountKopecks,
+      amountRubles: priceRubles,
+      status: "created"
+    }, 201);
+
+  } catch {
+    return json({
+      error: "Не удалось создать заказ. Попробуйте позже."
+    }, 500);
+  }
+}
+
 async function moderateContent(env, prompt, imageData) {
-  const response = await fetch("https://api.openai.com/v1/moderations", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.OPENAI_API_KEY}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: "omni-moderation-latest",
-      input: [
-        {
-          type: "text",
-          text: prompt
-        },
-        {
-          type: "image_url",
-          image_url: {
-            url: imageData
+  const response = await fetch(
+    "https://api.openai.com/v1/moderations",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "omni-moderation-latest",
+        input: [
+          { type: "text", text: prompt },
+          {
+            type: "image_url",
+            image_url: { url: imageData }
           }
-        }
-      ]
-    })
-  });
+        ]
+      })
+    }
+  );
 
   if (!response.ok) {
     throw new Error("Не удалось проверить содержимое.");
@@ -50,16 +180,20 @@ async function moderateContent(env, prompt, imageData) {
 
   return data.results[0].flagged === true;
 }
+
 async function handleRequest(request, env, path) {
   if (request.method !== "POST") {
     return json({ error: "Метод не поддерживается." }, 405);
   }
 
   if (!env.FAL_KEY || !env.TRENDVIDEO_ACCESS_CODE) {
-    return json({ error: "Сервер ещё не настроен. Проверь секреты." }, 503);
+    return json({
+      error: "Сервер ещё не настроен. Проверь секреты."
+    }, 503);
   }
 
   let body;
+
   try {
     body = await request.json();
   } catch {
@@ -102,8 +236,11 @@ async function handleRequest(request, env, path) {
       if (!ALLOWED_RESOLUTIONS.has(resolution)) {
         return json({ error: "Недопустимое качество." }, 400);
       }
-        if (!env.OPENAI_API_KEY) {
-        return json({ error: "Проверка безопасности не настроена." }, 503);
+
+      if (!env.OPENAI_API_KEY) {
+        return json({
+          error: "Проверка безопасности не настроена."
+        }, 503);
       }
 
       const isBlocked = await moderateContent(
@@ -117,6 +254,7 @@ async function handleRequest(request, env, path) {
           error: "Фотография или описание нарушают правила безопасности. Попробуйте другое изображение или описание."
         }, 400);
       }
+
       const response = await fetch(
         `https://queue.fal.run/${MODEL_ID}`,
         {
@@ -141,7 +279,9 @@ async function handleRequest(request, env, path) {
       const requestId = data.request_id || data.requestId;
 
       if (!requestId) {
-        return json({ error: "fal.ai не вернул номер задания." }, 502);
+        return json({
+          error: "fal.ai не вернул номер задания."
+        }, 502);
       }
 
       return json({ requestId });
@@ -154,7 +294,9 @@ async function handleRequest(request, env, path) {
         typeof requestId !== "string" ||
         !/^[a-f0-9-]{36}$/i.test(requestId)
       ) {
-        return json({ error: "Некорректный номер задания." }, 400);
+        return json({
+          error: "Некорректный номер задания."
+        }, 400);
       }
 
       const baseUrl =
@@ -205,10 +347,7 @@ async function handleRequest(request, env, path) {
           });
         }
 
-        return json({
-          status: "COMPLETED",
-          videoUrl
-        });
+        return json({ status: "COMPLETED", videoUrl });
       }
 
       return json({
@@ -220,7 +359,9 @@ async function handleRequest(request, env, path) {
     return json({ error: "Маршрут не найден." }, 404);
 
   } catch {
-    return json({ error: "Ошибка соединения с fal.ai." }, 502);
+    return json({
+      error: "Ошибка соединения с fal.ai."
+    }, 502);
   }
 }
 
@@ -233,6 +374,10 @@ export default {
         ok: true,
         service: "trendvideo-ai"
       });
+    }
+
+    if (url.pathname === "/api/create-order") {
+      return createOrder(request, env);
     }
 
     if (
