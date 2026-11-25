@@ -1,10 +1,17 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
+"$schema": "node_modules/wrangler/config-schema.json",
   "name": "trendvideo-ai",
   "main": "src/index.js",
   "compatibility_date": "2026-11-23",
   "assets": {
     "directory": "./public",
     "binding": "ASSETS"
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "trendvideo-db",
+      "database_id": "06b06d77-ad27-4b8b-8e55-9ab9d3bbe27d"
+    }
+  ]
 }
