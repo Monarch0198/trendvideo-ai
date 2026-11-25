@@ -875,27 +875,39 @@ animatePhotoBtn.addEventListener('click', () => {
   animatePhotoBtn.classList.toggle('active', opening);
   customIdeaBtn.classList.remove('active');
 });
-  function estimatePrice() {
+function estimatePrice() {
   const seconds = Number(durationBox.value);
   const quality = qualityBox.value;
 
+  const mode = customIdeaPanel.hidden
+    ? animatePhotoPanel.hidden ? 'standard' : 'animate'
+    : 'custom';
+
   const prices = {
-    "5-540p": 199,
-    "5-720p": 249,
-    "8-540p": 249,
-    "8-720p": 329,
-    "10-540p": 299,
-    "10-720p": 399
+    standard: {
+      "5-540p": 199, "5-720p": 249,
+      "8-540p": 249, "8-720p": 329,
+      "10-540p": 299, "10-720p": 399
+    },
+    custom: {
+      "5-540p": 189, "5-720p": 189,
+      "8-540p": 229, "8-720p": 229,
+      "10-540p": 249, "10-720p": 249
+    },
+    animate: {
+      "5-540p": 49, "5-720p": 49,
+      "8-540p": 79, "8-720p": 79,
+      "10-540p": 99, "10-720p": 99
+    }
   };
 
-  const price = prices[`${seconds}-${quality}`];
+  const price = prices[mode][`${seconds}-${quality}`];
 
   document.getElementById('priceEstimate').textContent =
     `Стоимость видео: ${price} ₽`;
 
   return { price };
 }
-
 durationBox.addEventListener('change', estimatePrice);
 qualityBox.addEventListener('change', estimatePrice);
 estimatePrice();
