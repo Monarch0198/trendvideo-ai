@@ -765,7 +765,100 @@ style="width:100%;height:150px;object-fit:contain;object-position:center;border-
 <a id="downloadVideo" class="primary" style="display:block;text-align:center;text-decoration:none;margin-top:12px" target="_blank" rel="noopener">Скачать видео</a>
 </div>
 <p class="note">Важно: создание видео платное. Перед каждым запуском сайт покажет примерную стоимость и попросит подтверждение. Не нажимай подтверждение, если не хочешь тратить средства.</p>
-<footer>TrendVideo AI · тестовая версия · генерация выполняется через fal.ai</footer>
+<section class="card" id="support">
+  <label class="label">💬 Поддержка TrendVideo AI</label>
+
+  <p class="note" style="margin-bottom:18px">
+    Остались вопросы или возникла проблема с заказом?
+    Напиши нам — мы постараемся помочь.
+  </p>
+
+  <form id="supportForm">
+
+    <label class="label" for="supportName">
+      Твоё имя
+    </label>
+    <input
+      id="supportName"
+      name="name"
+      type="text"
+      placeholder="Как к тебе обращаться"
+      maxlength="80"
+      required
+    >
+
+    <label class="label" for="supportEmail" style="margin-top:16px">
+      Электронная почта для ответа
+    </label>
+    <input
+      id="supportEmail"
+      name="email"
+      type="email"
+      placeholder="example@mail.com"
+      maxlength="254"
+      required
+    >
+
+    <label class="label" for="supportOrder" style="margin-top:16px">
+      Номер заказа
+      <span style="font-size:12px;color:#a99ab8">
+        (необязательно)
+      </span>
+    </label>
+    <input
+      id="supportOrder"
+      name="order"
+      type="text"
+      placeholder="Если вопрос связан с заказом"
+      maxlength="100"
+    >
+
+    <label class="label" for="supportMessage" style="margin-top:16px">
+      Твоё сообщение
+    </label>
+    <textarea
+      id="supportMessage"
+      name="message"
+      placeholder="Опиши свой вопрос..."
+      maxlength="3000"
+      required
+    ></textarea>
+
+    <button
+      type="submit"
+      id="supportSubmit"
+      style="
+        width:100%;
+        min-height:54px;
+        margin-top:18px;
+        border:0;
+        border-radius:40px;
+        background:linear-gradient(100deg,#ff9c83,#ed54d0,#9b4dff);
+        color:white;
+        font-size:16px;
+        font-weight:900;
+      "
+    >
+      Отправить сообщение ✉️
+    </button>
+
+    <div
+      id="supportStatus"
+      class="status"
+      role="status"
+      aria-live="polite"
+    ></div>
+
+    <p class="note">
+      Твоя почта нужна только для ответа на обращение.
+    </p>
+
+  </form>
+</section>
+
+<footer>
+  TrendVideo AI · тестовая версия
+</footer>
 </main>
 <script>
 
