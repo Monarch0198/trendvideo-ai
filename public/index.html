@@ -1075,10 +1075,27 @@ document.querySelectorAll('.trend').forEach((btn) => {
     document.querySelectorAll('.trend').forEach((item) => {
       item.classList.remove('active');
     });
-btn.classList.add('active');
-selectedTrendPrompt = btn.dataset.prompt || '';
-promptBox.value = btn.dataset.description || '';
-console.log('Выбран промпт:', selectedTrendPrompt);
+
+    btn.classList.add('active');
+
+    // Закрываем дополнительные режимы
+    customIdeaPanel.hidden = true;
+    animatePhotoPanel.hidden = true;
+
+    customIdeaBtn.classList.remove('active');
+    animatePhotoBtn.classList.remove('active');
+
+    // Переключаемся на выбранный эффект
+    activeMode = 'standard';
+
+    selectedTrendPrompt = btn.dataset.prompt || '';
+    promptBox.value = btn.dataset.description || '';
+
+    updateGenerateButton();
+    estimatePrice();
+    updateSecondCharacterVisibility();
+    updateRomanceVisibility();
+    updateRoyalVisibility();
   });
 });
 const firstTrend = document.querySelector('.trend.active');
