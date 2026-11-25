@@ -452,30 +452,64 @@ footer {
     font-size: 17px;
   }
 }
-details[name="videoMode"] {
+.video-mode-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.video-mode-buttons button {
   min-width: 0;
+  min-height: 46px;
+  padding: 10px 6px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 12px;
+  background: rgba(255,255,255,.06);
+  color: white;
+  font-weight: 700;
 }
-
-details[name="videoMode"] > summary {
-  list-style: none;
-  min-height: 42px;
-  padding: 9px 4px !important;
-  border-radius: 12px !important;
-  font-size: 13px !important;
-  background: rgba(255,255,255,.05);
-  transition: .2s;
-}
-
-details[name="videoMode"] > summary::-webkit-details-marker {
-  display: none;
-}
-
-details[name="videoMode"][open] > summary {
-  border-color: var(--pink) !important;
+.video-mode-buttons button.active {
+  border-color: var(--pink);
   background: rgba(250,85,212,.15);
   box-shadow: 0 0 15px rgba(250,85,212,.15);
 }
-</style>
+
+.video-mode-panel {
+  width: 100%;
+  min-width: 0;
+  padding-top: 16px;
+}
+
+.custom-photos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+.custom-photos > div {
+  min-width: 0;
+}
+
+.custom-photos .upload {
+  min-height: 125px;
+  padding: 10px;
+  border-radius: 16px;
+}
+
+.video-mode-panel .label {
+  margin-top: 16px;
+  font-size: 15px;
+}
+
+.video-mode-panel textarea {
+  min-height: 85px;
+}
+
+.video-mode-panel input[type="file"] {
+  display: none;
+} 
+  </style>
 </head>
 <body>
 <main class="wrap">
@@ -576,83 +610,70 @@ details[name="videoMode"][open] > summary {
   </button>
 </section>
 
+
 <section class="card">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-
-    <details name="videoMode">
-      <summary style="border:1px solid #888;border-radius:10px;padding:12px 5px;text-align:center;font-weight:600;font-size:14px;cursor:pointer">
-        ✨ Своя идея
-      </summary>
-
-      <div style="padding-top:14px">
-  <p class="note">Добавь фотографии для своего сюжета.</p>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-
-    <div>
-      <label class="upload" for="customPhoto1"
-        style="min-height:125px;padding:10px;border-radius:16px">
-        <strong>＋ Первое фото</strong>
-        <small>Обязательно</small>
-      </label>
-      <input id="customPhoto1" type="file"
-        accept="image/png,image/jpeg,image/webp">
-    </div>
-
-    <div>
-      <label class="upload" for="customPhoto2"
-        style="min-height:125px;padding:10px;border-radius:16px">
-        <strong>＋ Второе фото</strong>
-        <small>Необязательно</small>
-      </label>
-      <input id="customPhoto2" type="file"
-        accept="image/png,image/jpeg,image/webp">
-    </div>
-
+  <div class="video-mode-buttons">
+    <button type="button" id="customIdeaBtn">✨ Своя идея</button>
+    <button type="button" id="animatePhotoBtn">📸 Оживить фото</button>
   </div>
 
-  <label class="label" for="customDescription"
-    style="font-size:15px;margin-top:16px">
-    Что должно происходить в видео?
-  </label>
+  <div id="customIdeaPanel" class="video-mode-panel" hidden>
+    <p class="note">Добавь фотографии для своего сюжета.</p>
 
-  <textarea id="customDescription"
-    style="min-height:85px"
-    placeholder="Например: парень и девушка гуляют по воздуху, а затем вместе взлетают..."></textarea>
-
-  <p class="note">Создание видео пока находится в разработке.</p>
-      </div>
-    </details>
-
-    <details name="videoMode">
-      <summary style="border:1px solid #888;border-radius:10px;padding:12px 5px;text-align:center;font-weight:600;font-size:14px;cursor:pointer">
-        📸 Оживить фото
-      </summary>
-
-      <div style="padding-top:14px">
-        <p class="note">Загрузи фотографию и выбери эффект.</p>
-
-        <label class="upload" for="animatePhoto">
-          <strong>＋ Загрузить фотографию</strong>
-          <small>JPG, PNG или WEBP</small>
+    <div class="custom-photos">
+      <div>
+        <label class="upload" for="customPhoto1">
+          <strong>＋ Первое фото</strong>
+          <small>Обязательно</small>
         </label>
-        <input id="animatePhoto" type="file" accept="image/png,image/jpeg,image/webp">
-
-        <label class="label" for="animationType" style="margin-top:18px">
-          Как оживить фотографию?
-        </label>
-        <select id="animationType">
-          <option value="smile">Улыбка</option>
-          <option value="blink">Моргание и движение глаз</option>
-          <option value="turn">Поворот головы</option>
-          <option value="hair">Ветер в волосах</option>
-          <option value="camera">Движение камеры</option>
-        </select>
-
-        <p class="note">Функция пока находится в разработке.</p>
+        <input id="customPhoto1" type="file"
+          accept="image/png,image/jpeg,image/webp">
       </div>
-    </details>
 
+      <div>
+        <label class="upload" for="customPhoto2">
+          <strong>＋ Второе фото</strong>
+          <small>Необязательно</small>
+        </label>
+        <input id="customPhoto2" type="file"
+          accept="image/png,image/jpeg,image/webp">
+      </div>
+    </div>
+
+    <label class="label" for="customDescription">
+      Что должно происходить в видео?
+    </label>
+
+    <textarea id="customDescription"
+      placeholder="Опиши свою идею..."></textarea>
+
+    <p class="note">Создание видео пока находится в разработке.</p>
+  </div>
+
+  <div id="animatePhotoPanel" class="video-mode-panel" hidden>
+    <p class="note">Загрузи фотографию и выбери эффект.</p>
+
+    <label class="upload" for="animatePhoto">
+      <strong>＋ Загрузить фотографию</strong>
+      <small>JPG, PNG или WEBP</small>
+    </label>
+
+    <input id="animatePhoto" type="file"
+      accept="image/png,image/jpeg,image/webp">
+
+    <label class="label" for="animationType">
+      Как оживить фотографию?
+    </label>
+
+    <select id="animationType">
+      <option value="smile">Улыбка</option>
+      <option value="blink">Моргание и движение глаз</option>
+      <option value="turn">Поворот головы</option>
+      <option value="hair">Ветер в волосах</option>
+      <option value="camera">Движение камеры</option>
+    </select>
+
+    <p class="note">Функция пока находится в разработке.</p>
   </div>
 </section>
 <section class="card">
@@ -834,7 +855,27 @@ function setupLocalPhotoPreview(inputId) {
 setupLocalPhotoPreview('customPhoto1');
 setupLocalPhotoPreview('customPhoto2');
 setupLocalPhotoPreview('animatePhoto');
-function estimatePrice() {
+const customIdeaBtn = document.getElementById('customIdeaBtn');
+const animatePhotoBtn = document.getElementById('animatePhotoBtn');
+const customIdeaPanel = document.getElementById('customIdeaPanel');
+const animatePhotoPanel = document.getElementById('animatePhotoPanel');
+
+customIdeaBtn.addEventListener('click', () => {
+  const opening = customIdeaPanel.hidden;
+  customIdeaPanel.hidden = !opening;
+  animatePhotoPanel.hidden = true;
+  customIdeaBtn.classList.toggle('active', opening);
+  animatePhotoBtn.classList.remove('active');
+});
+
+animatePhotoBtn.addEventListener('click', () => {
+  const opening = animatePhotoPanel.hidden;
+  animatePhotoPanel.hidden = !opening;
+  customIdeaPanel.hidden = true;
+  animatePhotoBtn.classList.toggle('active', opening);
+  customIdeaBtn.classList.remove('active');
+});
+  function estimatePrice() {
   const seconds = Number(durationBox.value);
   const quality = qualityBox.value;
 
