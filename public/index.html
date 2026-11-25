@@ -866,6 +866,7 @@ customIdeaBtn.addEventListener('click', () => {
   animatePhotoPanel.hidden = true;
   customIdeaBtn.classList.toggle('active', opening);
   animatePhotoBtn.classList.remove('active');
+  estimatePrice();
 });
 
 animatePhotoBtn.addEventListener('click', () => {
@@ -874,6 +875,7 @@ animatePhotoBtn.addEventListener('click', () => {
   customIdeaPanel.hidden = true;
   animatePhotoBtn.classList.toggle('active', opening);
   customIdeaBtn.classList.remove('active');
+  estimatePrice();
 });
 function estimatePrice() {
   const seconds = Number(durationBox.value);
