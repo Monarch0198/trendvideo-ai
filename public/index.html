@@ -1283,25 +1283,19 @@ generate.addEventListener('click', async () => {
     return;
   }
 
-  const { total, promo } = estimatePrice();
-  const seconds = Number(durationBox.value);
-  const quality = qualityBox.value;
+  const { price } = estimatePrice();
+const seconds = Number(durationBox.value);
+const quality = qualityBox.value;
 
-  const promoText = promo
-    ? 'Сейчас действует промо-тариф, который может измениться.'
-    : 'Использован обычный тариф, цена может измениться.';
-
-  const consent = window.confirm(
-    `ВНИМАНИЕ: это платная генерация через fal.ai.\n\n` +
-    `Модель: Vidu Q4\n` +
-    `Длительность: ${seconds} сек.\n` +
-    `Качество: ${quality}\n` +
-    `Примерная стоимость: $${total.toFixed(2)}\n\n` +
-    `${promoText}\n\n` +
-    `Продолжить и отправить фото на обработку?`
-  );
-
-  if (!consent) return;
+const consent = window.confirm(
+  `ВНИМАНИЕ: это платная генерация через fal.ai.\n\n` +
+  `Модель: Vidu Q4\n` +
+  `Длительность: ${seconds} сек.\n` +
+  `Качество: ${quality}\n` +
+  `Примерная стоимость: ${price} ₽\n\n` +
+  `Продолжить и отправить фото на обработку?`
+);
+if (!consent) return;
 
   busy = true;
   generate.disabled = true;
