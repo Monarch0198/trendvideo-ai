@@ -1473,7 +1473,7 @@ if (!consent) return;
     );
   } finally {
     busy = false;
-    generate.disabled = !selectedFile;
+    updateGenerateButton();
   }
 });
   const supportForm = document.getElementById('supportForm');
