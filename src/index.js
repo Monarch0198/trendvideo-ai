@@ -14,7 +14,42 @@ function json(data, status = 200) {
 function errorMessage(data) {
   return data?.detail || data?.message || data?.error || "Ошибка fal.ai";
 }
+async function moderateContent(env, prompt, imageData) {
+  const response = await fetch("https://api.openai.com/v1/moderations", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${env.OPENAI_API_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model: "omni-moderation-latest",
+      input: [
+        {
+          type: "text",
+          text: prompt
+        },
+        {
+          type: "image_url",
+          image_url: {
+            url: imageData
+          }
+        }
+      ]
+    })
+  });
 
+  if (!response.ok) {
+    throw new Error("Не удалось проверить содержимое.");
+  }
+
+  const data = await response.json();
+
+  if (!data.results || !data.results[0]) {
+    throw new Error("Нет результата проверки.");
+  }
+
+  return data.results[0].flagged === true;
+}
 async function handleRequest(request, env, path) {
   if (request.method !== "POST") {
     return json({ error: "Метод не поддерживается." }, 405);
@@ -67,7 +102,21 @@ async function handleRequest(request, env, path) {
       if (!ALLOWED_RESOLUTIONS.has(resolution)) {
         return json({ error: "Недопустимое качество." }, 400);
       }
+        if (!env.OPENAI_API_KEY) {
+        return json({ error: "Проверка безопасности не настроена." }, 503);
+      }
 
+      const isBlocked = await moderateContent(
+        env,
+        prompt.trim(),
+        imageData
+      );
+
+      if (isBlocked) {
+        return json({
+          error: "Фотография или описание нарушают правила безопасности. Попробуйте другое изображение или описание."
+        }, 400);
+      }
       const response = await fetch(
         `https://queue.fal.run/${MODEL_ID}`,
         {
