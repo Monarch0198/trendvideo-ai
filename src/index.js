@@ -369,12 +369,23 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    if (url.pathname === "/api/health") {
-      return json({
-        ok: true,
-        service: "trendvideo-ai"
-      });
-    }
+if (url.pathname === "/api/health") {
+  try {
+    await env.DB.prepare("SELECT 1").first();
+
+    return json({
+      ok: true,
+      service: "trendvideo-ai",
+      database: "connected"
+    });
+  } catch {
+    return json({
+      ok: false,
+      service: "trendvideo-ai",
+      database: "error"
+    }, 503);
+  }
+}
 
     if (url.pathname === "/api/create-order") {
       return createOrder(request, env);
