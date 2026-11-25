@@ -875,7 +875,7 @@ removePhoto.addEventListener('click', () => {
   photoUploadLabel.style.display = 'flex';
   if (previewUrl) URL.revokeObjectURL(previewUrl);
   previewUrl = null;
-  generate.disabled = true;
+  updateGenerateButton();
 });
 const promptBox = document.getElementById('prompt');
 const generate = document.getElementById('generate');
