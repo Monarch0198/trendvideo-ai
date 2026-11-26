@@ -971,28 +971,43 @@ const customIdeaBtn = document.getElementById('customIdeaBtn');
 const animatePhotoBtn = document.getElementById('animatePhotoBtn');
 const customIdeaPanel = document.getElementById('customIdeaPanel');
 const animatePhotoPanel = document.getElementById('animatePhotoPanel');
+const standardPhotoCard = document.getElementById('standardPhotoCard');
+const trendsCard = document.querySelector('#trends').closest('.card');
 customIdeaBtn.addEventListener('click', () => {
   const opening = customIdeaPanel.hidden;
-  customIdeaPanel.hidden = !opening;
+customIdeaPanel.hidden = !opening;
   animatePhotoPanel.hidden = true;
-  customIdeaBtn.classList.toggle('active', opening);
+customIdeaBtn.classList.toggle('active', opening);
   animatePhotoBtn.classList.remove('active');
-  activeMode = opening ? 'custom' : 'standard';
+standardPhotoCard.style.display = opening ? 'none' : 'block';
+  trendsCard.style.display = opening ? 'none' : 'block';
+if (opening) {
+    document.querySelectorAll('.trend').forEach((item) => {
+      item.classList.remove('active');
+    });
+  }
+activeMode = opening ? 'custom' : 'standard';
   updateGenerateButton();
   estimatePrice();
 });
-
 animatePhotoBtn.addEventListener('click', () => {
   const opening = animatePhotoPanel.hidden;
-  animatePhotoPanel.hidden = !opening;
+animatePhotoPanel.hidden = !opening;
   customIdeaPanel.hidden = true;
-  animatePhotoBtn.classList.toggle('active', opening);
+animatePhotoBtn.classList.toggle('active', opening);
   customIdeaBtn.classList.remove('active');
-  activeMode = opening ? 'animate' : 'standard';
+standardPhotoCard.style.display = opening ? 'none' : 'block';
+  trendsCard.style.display = opening ? 'none' : 'block';
+if (opening) {
+    document.querySelectorAll('.trend').forEach((item) => {
+      item.classList.remove('active');
+    });
+  }
+activeMode = opening ? 'animate' : 'standard';
   updateGenerateButton();
   estimatePrice();
 });
-function estimatePrice() {
+  function estimatePrice() {
   const seconds = Number(durationBox.value);
   const quality = qualityBox.value;
 
@@ -1075,9 +1090,9 @@ document.querySelectorAll('.trend').forEach((btn) => {
     document.querySelectorAll('.trend').forEach((item) => {
       item.classList.remove('active');
     });
-
-    btn.classList.add('active');
-
+btn.classList.add('active');
+standardPhotoCard.style.display = 'block';
+trendsCard.style.display = 'block';
     // Закрываем дополнительные режимы
     customIdeaPanel.hidden = true;
     animatePhotoPanel.hidden = true;
