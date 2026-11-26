@@ -529,7 +529,7 @@ footer {
   <p>🚀 <b>4. Получи результат</b> — после запуска генерации сможешь посмотреть и скачать видео.</p>
   <p class="note">Сейчас сайт находится в тестовом режиме. Генерация пока отключена.</p>
 </section>
-<section class="card" id="standardPhotoCard">
+<section class="card" id="standardPhotoCard" style="display:none">
 <label class="label">1. Загрузи фотографию</label>
 <label class="upload" for="photo" id="photoUploadLabel">
   <div style="font-size:30px">＋</div>
@@ -1113,13 +1113,6 @@ trendsCard.style.display = 'block';
     updateRoyalVisibility();
   });
 });
-const firstTrend = document.querySelector('.trend.active');
-
-if (firstTrend) {
-  selectedTrendPrompt = firstTrend.dataset.prompt || '';
-  promptBox.value = firstTrend.dataset.description || '';
-  console.log('Выбран промпт:', selectedTrendPrompt);
-}
 const secondCharacterCard = document.getElementById('secondCharacterCard');
 const changeSecondCharacter = document.getElementById('changeSecondCharacter');
 const secondCharacterUpload = document.getElementById('secondCharacterUpload');
