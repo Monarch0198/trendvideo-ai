@@ -979,12 +979,22 @@ customIdeaPanel.hidden = !opening;
   animatePhotoPanel.hidden = true;
 customIdeaBtn.classList.toggle('active', opening);
   animatePhotoBtn.classList.remove('active');
-standardPhotoCard.style.display = opening ? 'none' : 'block';
-  trendsCard.style.display = opening ? 'none' : 'block';
+standardPhotoCard.style.display = 'none';
+  trendsCard.style.display = 'block';
+document.querySelectorAll('.trend').forEach((item) => {
+    item.classList.remove('active');
+  });
 if (opening) {
-    document.querySelectorAll('.trend').forEach((item) => {
-      item.classList.remove('active');
-    });
+    promptBox.value = '';
+    selectedTrendPrompt = '';
+  }
+updateSecondCharacterVisibility();
+  updateRomanceVisibility();
+  updateRoyalVisibility();
+activeMode = opening ? 'custom' : 'standard';
+updateGenerateButton();
+  estimatePrice();
+});
   }
 activeMode = opening ? 'custom' : 'standard';
   updateGenerateButton();
@@ -992,19 +1002,28 @@ activeMode = opening ? 'custom' : 'standard';
 });
 animatePhotoBtn.addEventListener('click', () => {
   const opening = animatePhotoPanel.hidden;
-animatePhotoPanel.hidden = !opening;
+
+  animatePhotoPanel.hidden = !opening;
   customIdeaPanel.hidden = true;
-animatePhotoBtn.classList.toggle('active', opening);
+
+  animatePhotoBtn.classList.toggle('active', opening);
   customIdeaBtn.classList.remove('active');
-standardPhotoCard.style.display = opening ? 'none' : 'block';
-  trendsCard.style.display = opening ? 'none' : 'block';
+
+  standardPhotoCard.style.display = 'none';
+  trendsCard.style.display = 'block';
+
+  document.querySelectorAll('.trend').forEach((item) => {
+    item.classList.remove('active');
+  });
 if (opening) {
-    document.querySelectorAll('.trend').forEach((item) => {
-      item.classList.remove('active');
-    });
-  }
+    promptBox.value = '';
+    selectedTrendPrompt = '';
+}
+updateSecondCharacterVisibility();
+  updateRomanceVisibility();
+  updateRoyalVisibility();
 activeMode = opening ? 'animate' : 'standard';
-  updateGenerateButton();
+updateGenerateButton();
   estimatePrice();
 });
   function estimatePrice() {
